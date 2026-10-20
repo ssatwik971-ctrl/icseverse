@@ -1,0 +1,29 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/login"
+  to = "/auth.html"
+  status = 200
+[[redirects]]
+  from = "/signup"
+  to = "/auth.html"
+  status = 200
+[[redirects]]
+  from = "/forgot-password"
+  to = "/auth.html"
+  status = 200
+[[redirects]]
+  from = "/reset-password"
+  to = "/auth.html"
+  status = 200
+[[redirects]]
+  from = "/account"
+  to = "/auth.html"
+  status = 200
+[[redirects]]
+  from = "/api/lessons"
+  to = "/.netlify/functions/lessons"
+  status = 200
