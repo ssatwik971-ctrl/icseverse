@@ -1,0 +1,5 @@
+# Cloudflare Pages settings (only used if you deploy there).
+# Dashboard equivalent: build command "npm run build", output directory "dist".
+name = "studynest"
+compatibility_date = "2026-10-01"
+pages_build_output_dir = "dist"
