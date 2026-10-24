@@ -1,0 +1,16 @@
+{
+  "name": "studynest",
+  "version": "1.0.0",
+  "private": true,
+  "description": "StudyNest static site, Netlify Identity account pages and lessons function",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "@netlify/identity": "^2.0.0",
+    "@netlify/neon": "^1.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}
