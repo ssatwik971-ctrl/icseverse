@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /auth.html
-
-Sitemap: https://icseverse.netlify.app/sitemap.xml
