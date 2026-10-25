@@ -12,7 +12,7 @@
 //   DELETE /api/lessons?all=true   -> delete all of the user's lessons
 //
 // Needs NETLIFY_DATABASE_URL (set automatically when Netlify DB is enabled)
-// and db/001 + db/002 run against the database.
+// and netlify/database/migrations/001 + 002 run against the database.
 
 import { getUser } from '@netlify/identity'
 import { neon } from '@netlify/neon'
