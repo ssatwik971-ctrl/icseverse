@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -17,26 +17,73 @@
 <header class="topbar">
   <a class="brand" href="/" style="color:inherit;text-decoration:none" aria-label="StudyNest home"><div class="brand-mark">✦</div><div>StudyNest <small>YOUR PERSONAL TEACHER</small></div></a>
 </header>
-<main class="layout" style="display:block;max-width:640px">
-  <section class="panel">
-    <div class="tiny-label">ABOUT</div>
-    <h1 style="margin:6px 0 10px">Built by a student, for students</h1>
-    <p class="muted">StudyNest started as a way to help friends revise for ICSE Class IX. It has 105+ chapters across every subject, with lessons, notes, quizzes and flashcards.</p>
 
-    <div class="saved-card" style="margin:18px 0 12px">
-      <div class="saved-icon" aria-hidden="true">SS</div>
-      <div class="saved-main"><strong>Satwik Singh</strong><small>Creator of StudyNest</small></div>
+<main class="layout" style="display:block;max-width:900px">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="eyebrow">Contact</div>
+    <h1>We'd love to <span>hear from you.</span></h1>
+    <p>Got a question, spotted a mistake in a lesson, or have an idea for a new chapter? StudyNest is built by a student for students, and every message genuinely gets read.</p>
+    <div class="hero-bottom">
+      <div class="hero-stat"><strong>105+</strong> chapters</div>
+      <div class="hero-stat"><strong>ICSE</strong> Class IX</div>
+      <div class="hero-stat"><strong>Free</strong> to use</div>
+    </div>
+  </section>
+
+  <!-- Contact cards -->
+  <section class="panel">
+    <div class="panel-heading">
+      <div>
+        <div class="tiny-label">GET IN TOUCH</div>
+        <h2 style="margin-top:4px">Choose how you'd like to reach out</h2>
+        <p>Pick whichever fits. Both go straight to my inbox.</p>
+      </div>
     </div>
 
-    <p style="margin:0 0 4px"><a href="mailto:icseverse@gmail.com?subject=StudyNest%20feedback">icseverse@gmail.com</a></p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px">
+
+      <!-- Updated to Gmail Compose -->
+      <a class="reference-card" href="https://mail.google.com/mail/?view=cm&fs=1&to=icseverse@gmail.com&su=StudyNest%20support" target="_blank" rel="noopener noreferrer" style="padding:18px">
+        <div class="saved-icon" aria-hidden="true" style="margin-bottom:12px">✉</div>
+        <strong style="font-size:14px">Email support</strong>
+        <p style="-webkit-line-clamp:unset">Questions, suggestions or anything else. Write to us anytime.</p>
+        <small>Open Gmail →</small>
+      </a>
+
+      <!-- Updated to Gmail Compose -->
+      <a class="reference-card" href="https://mail.google.com/mail/?view=cm&fs=1&to=icseverse@gmail.com&su=StudyNest%20bug%20report&body=What%20happened%3A%0A%0AWhich%20chapter%20or%20page%3A%0A%0ADevice%20and%20browser%3A%0A" target="_blank" rel="noopener noreferrer" style="padding:18px">
+        <div class="saved-icon" aria-hidden="true" style="margin-bottom:12px">⚑</div>
+        <strong style="font-size:14px">Report a bug or feedback</strong>
+        <p style="-webkit-line-clamp:unset">Found a mistake in a lesson or something not working? Tell us what happened.</p>
+        <small>Open Gmail →</small>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- Author profile -->
+  <section class="panel">
+    <div class="tiny-label">THE CREATOR</div>
+    <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:14px">
+      <div class="empty-icon" aria-hidden="true" style="margin:0;flex:0 0 68px;font-weight:800;color:#17233f;font-size:22px">SS</div>
+      <div style="flex:1 1 260px;min-width:0">
+        <h2 style="margin:0;font-size:19px;letter-spacing:-.3px">Satwik Singh</h2>
+        <div class="tag orange" style="margin-top:6px">Student · Creator of StudyNest</div>
+        <p class="muted" style="margin:10px 0 0;font-size:13px">StudyNest started as a way to help friends revise for ICSE Class IX. It grew into 105+ chapters across every subject, with lessons, notes, quizzes and flashcards.</p>
+      </div>
+    </div>
 
     <div class="action-row">
-      <a class="btn btn-primary" href="mailto:icseverse@gmail.com?subject=StudyNest%20feedback" style="text-decoration:none">Send email</a>
-      <a class="btn btn-light" href="/" style="text-decoration:none">Back to home</a>
+      <!-- Updated to Gmail Compose -->
+      <a class="btn btn-primary" href="https://mail.google.com/mail/?view=cm&fs=1&to=icseverse@gmail.com&su=StudyNest%20feedback" target="_blank" rel="noopener noreferrer" style="text-decoration:none">✉ Send email via Gmail</a>
+      <a class="btn btn-light" href="/" style="text-decoration:none">← Back to home</a>
     </div>
-
-    <p class="muted" style="font-size:12px;margin:18px 0 0">StudyNest is an independent study helper, not an official CISCE product. Found a mistake? Message me and I'll fix it.</p>
   </section>
+
+  <p class="footer-note">StudyNest is an independent study helper, not an official CISCE product. Found a mistake? Message me and I'll fix it.</p>
+
 </main>
 </div>
 </body>

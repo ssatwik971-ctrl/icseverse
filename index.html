@@ -1,413 +1,606 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#17233f">
-<title>StudyNest — Your Personal Teacher</title>
-<meta name="description" content="StudyNest is a free AI study helper for ICSE Class 9. Pick a chapter and get simple explanations, exam notes, quizzes and flashcards in English, Hinglish or Hindi.">
-<link rel="canonical" href="https://icseverse.netlify.app/">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="StudyNest">
-<meta property="og:title" content="StudyNest — Your Personal Teacher">
-<meta property="og:description" content="Free AI study helper for ICSE Class 9: simple explanations, exam notes, quizzes and flashcards in English, Hinglish or Hindi.">
-<meta property="og:url" content="https://icseverse.netlify.app/">
-<meta property="og:image" content="https://icseverse.netlify.app/favicon.png">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="StudyNest — Your Personal Teacher">
-<meta name="twitter:description" content="Free AI study helper for ICSE Class 9.">
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" type="image/png" href="./favicon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
-<link rel="apple-touch-icon" href="./apple-touch-icon.png">
-<script defer src="https://js.puter.com/v2/"></script>
-<link rel="stylesheet" href="./assets/auth.css">
-<link rel="stylesheet" href="./assets/app.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-<script type="module" src="./assets/auth.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17233f">
+  <title>StudyNest — Your Personal Teacher</title>
+  <meta name="description"
+    content="StudyNest is a free AI study helper for ICSE Class 9. Pick a chapter and get simple explanations, exam notes, quizzes and flashcards in English, Hinglish or Hindi.">
+  <link rel="canonical" href="https://icseverse.netlify.app/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="StudyNest">
+  <meta property="og:title" content="StudyNest — Your Personal Teacher">
+  <meta property="og:description"
+    content="Free AI study helper for ICSE Class 9: simple explanations, exam notes, quizzes and flashcards in English, Hinglish or Hindi.">
+  <meta property="og:url" content="https://icseverse.netlify.app/">
+  <meta property="og:image" content="https://icseverse.netlify.app/favicon.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="StudyNest — Your Personal Teacher">
+  <meta name="twitter:description" content="Free AI study helper for ICSE Class 9.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/png" href="./favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <script defer src="https://js.puter.com/v2/"></script>
+  <link rel="stylesheet" href="./assets/auth.css">
+  <link rel="stylesheet" href="./assets/app.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+  <script type="module" src="./assets/auth.js"></script>
 </head>
+
 <body>
-<a class="skip-link" href="#teachPanel">Skip to lessons</a>
-<div class="app">
-<header class="topbar">
-  <div class="brand"><div class="brand-mark">✦</div><div>StudyNest <small>YOUR PERSONAL TEACHER</small></div></div>
-  <div class="top-actions"><span class="pill"><span class="status-dot"></span>Keyless AI mode</span><button class="btn btn-light btn-sm" id="libraryTop">▣ <span class="lib-label">My library</span> <span id="savedCount">0</span><span class="due-badge hidden" id="dueBadge" title="Saved lessons due for review">0</span></button><a class="btn btn-light btn-sm" id="contactBtn" href="./contact.html">Contact us</a><div class="auth-controls" id="authControls"></div></div>
-</header>
-<div class="layout">
-  <aside class="sidebar">
-    <div class="side-heading"><span>Your syllabus</span><span class="count-badge" id="chapterCount">0</span></div>
-    <input class="side-search" id="subjectFilter" type="search" placeholder="⌕ Find a subject…" aria-label="Find a subject">
-    <div class="subject-list" id="subjectList"></div>
-    <div class="side-footer"><strong>📚 Your chapter index</strong>The chapter names and page references below come from the contents pages in the PDF you shared. Full chapter pages weren't included in that file, so teacher explanations are generated separately.</div>
-  </aside>
-  <main class="content" id="main">
-    <div class="resume-card hidden" id="resumeCard"></div>
-    <section class="hero">
-      <div class="eyebrow">A clearer way to study</div>
-      <h1>Learn anything, <span>one clear idea</span> at a time.</h1>
-      <p>Your patient Class 9 teacher. Ask a question, choose a chapter, get simple explanations, worked examples, exam notes, quizzes, and flashcards.</p>
-      <div class="hero-bottom"><div class="hero-stat"><strong id="heroChapterCount">0</strong> chapters indexed</div><div class="hero-stat"><strong>4</strong> learning modes</div><div class="hero-stat">💾 Saves lessons on this device</div></div>
-    </section>
-
-    <section class="panel" id="teachPanel">
-      <div class="panel-heading"><div><div class="tiny-label">START A LESSON</div><h2>What are we learning today?</h2><p>Choose a subject and chapter, or type any topic in your own words.</p></div><span class="tag orange">ICSE · Class IX</span></div>
-      <div class="form-grid">
-        <div class="field"><label for="subjectSelect">Subject</label><select id="subjectSelect"></select></div>
-        <div class="field"><label for="chapterSelect">Chapter from your books</label><select id="chapterSelect"><option value="">Choose a chapter (optional)</option></select></div>
-        <div class="field full"><label for="topicInput">Topic or question</label><input id="topicInput" type="text" placeholder="e.g. Explain cathode rays and how they ionise a gas" autocomplete="off">
-          <div class="subtopic-wrap" id="subtopicWrap"><span class="tiny-label">POPULAR TOPICS IN THIS SUBJECT</span><div class="suggestions" id="subtopicChips"></div></div>
-        </div>
-        <div class="field full"><label for="extraInput">Anything you'd like the teacher to focus on? <span class="muted" style="font-weight:400">(optional)</span></label><input id="extraInput" type="text" placeholder="e.g. numericals, important exam points, a real-life analogy…"></div>
-        <div class="field"><label for="modelSelect">AI model</label><select id="modelSelect"><option value="sol">GPT 6.1 Sol — everyday use</option><option value="astra">GPT 6 Astra — complex problems &amp; advanced reasoning</option><option value="nano">GPT 5.4 Nano — quick &amp; simple answers</option><option value="deepseek">DeepSeek V4.1 Flash — Another efficient model for regular explanations </option></select><small id="modelHint" style="color:var(--muted);display:block;margin-top:5px"></small></div>
-        <div class="field"><label id="langLabel">Explain in</label><div class="seg" role="radiogroup" aria-labelledby="langLabel"><label><input type="radio" name="lang" value="english" checked><span>English</span></label><label><input type="radio" name="lang" value="hinglish"><span>Hinglish</span></label><label><input type="radio" name="lang" value="hindi"><span>हिन्दी</span></label></div></div>
+  <a class="skip-link" href="#teachPanel">Skip to lessons</a>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">✦</div>
+        <div>StudyNest <small>YOUR PERSONAL TEACHER</small></div>
       </div>
-      <div class="suggestions"><button type="button" class="suggestion" aria-pressed="false" data-topic="Explain like I am a beginner">Explain from zero</button><button type="button" class="suggestion" aria-pressed="false" data-topic="Give me exam-focused notes">Exam-focused notes</button><button type="button" class="suggestion" aria-pressed="false" data-topic="Use a simple real-life analogy">Real-life analogy</button><button type="button" class="suggestion" aria-pressed="false" data-topic="Include one worked example">Worked example</button></div>
-      <div class="action-row"><button class="btn btn-primary" id="explainBtn">✦ Teach me</button><button class="btn btn-dark" data-mode="notes">▤ Detailed notes</button><button class="btn btn-light" data-mode="quiz">✎ Quiz me</button><button class="btn btn-light" data-mode="flashcards">▧ Flashcards</button><span class="status-line" id="aiStatus">No API key needed · Internet required for AI</span></div>
-      <div class="callout"><span>💡</span><div><strong>Honest note:</strong> The built-in database is a chapter index based on your uploaded contents pages. The teacher can create detailed explanations using AI without you entering an API key. Live AI and web references need an internet connection; the AI service may ask you to sign in or apply its own usage limits.</div></div>
-    </section>
-
-    <section class="panel lesson-panel" id="lessonPanel">
-      <div class="lesson-top"><div><div class="tiny-label" id="lessonKicker">READY WHEN YOU ARE</div><h2 class="lesson-title" id="lessonTitle" tabindex="-1">Your lesson will appear here</h2><div class="lesson-meta" id="lessonMeta"></div></div><div class="lesson-actions hidden" id="lessonActions"><button class="btn btn-light btn-sm" id="saveLessonBtn" aria-pressed="false">♡ Save</button><button class="btn btn-light btn-sm" id="copyLessonBtn">⧉ Copy</button><button class="btn btn-light btn-sm" id="printLessonBtn">⎙ Print</button><button class="btn btn-outline btn-sm" id="newLessonBtn" title="Clear this lesson and start a new one">✕ New</button></div></div>
-      <div class="lesson-body" id="lessonBody" aria-live="polite"><div class="empty-state"><div class="empty-icon">🧠</div><h3>Curiosity is a great place to start.</h3><p>Pick any subject, choose a chapter or type a question, then press <strong>Teach me</strong>. I'll break it into small, understandable steps.</p></div></div>
-      <div class="quiz-box hidden" id="quizBox"><div class="tiny-label">CHECK YOUR ANSWERS</div><label for="quizAnswers" class="muted" style="font-size:12px;display:block;margin-top:4px">Type your answers (like <span class="kbd">1-B, 2-D, 3-A…</span> or short written answers). The teacher will mark them and explain any mistakes.</label><textarea id="quizAnswers" placeholder="1-B, 2-A, 3-C…"></textarea><div class="action-row" style="margin-top:10px"><button class="btn btn-primary btn-sm" id="gradeBtn">✓ Check my answers</button></div><div class="quiz-feedback hidden" id="quizFeedback" aria-live="polite"></div></div>
-      <div class="refine-row hidden" id="refineRow"><span class="tiny-label">NOT QUITE RIGHT?</span>
-        <button class="btn btn-outline btn-sm" data-refine="" data-force="1">↻ Regenerate</button>
-        <button class="btn btn-outline btn-sm" data-refine="Explain this more simply, with shorter sentences, easier words and one extra everyday example.">Explain simpler</button>
-        <button class="btn btn-outline btn-sm" data-refine="Make this more challenging and exam-focused: go deeper, add tougher practice and higher-order thinking.">Make harder</button>
-        <button class="btn btn-outline btn-sm" data-refine="Write the whole response in simple Hindi (Devanagari script). Keep scientific and technical terms in English in brackets the first time they appear.">Translate to Hindi</button>
+      <div class="top-actions"><span class="pill"><span class="status-dot"></span>Keyless AI mode</span><button
+          class="btn btn-light btn-sm" id="libraryTop">▣ <span class="lib-label">My library</span> <span
+            id="savedCount">0</span><span class="due-badge hidden" id="dueBadge"
+            title="Saved lessons due for review">0</span></button><a class="btn btn-light btn-sm" id="contactBtn"
+          href="./contact.html">Contact us</a>
+        <div class="auth-controls" id="authControls"></div>
       </div>
-      <div class="reference-wrap hidden" id="referencesWrap"><div class="tiny-label">WEB READING · WIKIPEDIA</div><div class="reference-grid" id="referenceGrid"></div></div>
-    </section>
+    </header>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="side-heading"><span>Your syllabus</span><span class="count-badge" id="chapterCount">0</span></div>
+        <input class="side-search" id="subjectFilter" type="search" placeholder="⌕ Find a subject…"
+          aria-label="Find a subject">
+        <div class="subject-list" id="subjectList"></div>
+        <div class="side-footer"><strong>📚 Your Study Guide</strong>Explore over 100 chapters across your ICSE
+          syllabus. Tap any chapter to instantly generate custom lessons, revision notes, and practice quizzes.</div>
+      </aside>
+      <main class="content" id="main">
+        <div class="resume-card hidden" id="resumeCard"></div>
+        <section class="hero">
+          <div class="eyebrow">A clearer way to study</div>
+          <h1>Learn anything, <span>one clear idea</span> at a time.</h1>
+          <p>Your patient Class 9 teacher. Ask a question, choose a chapter, get simple explanations, worked examples,
+            exam notes, quizzes, and flashcards.</p>
+          <div class="hero-bottom">
+            <div class="hero-stat"><strong id="heroChapterCount">0</strong> chapters indexed</div>
+            <div class="hero-stat"><strong>4</strong> learning modes</div>
+            <div class="hero-stat">💾 Saves lessons on this device</div>
+          </div>
+        </section>
 
-    <section class="panel" id="databasePanel">
-      <div class="panel-heading"><div><div class="tiny-label">BUILT-IN CHAPTER INDEX</div><h2 id="indexTitle">Browse your chapters</h2><p>Tap any chapter to start learning it. Page numbers are the ones shown in your contents pages.</p></div><button class="btn btn-outline btn-sm" id="toggleIndex">Hide index</button></div>
-      <div id="indexContent"><input class="chapter-filter" id="chapterFilter" type="search" placeholder="⌕ Search chapters in this subject…" aria-label="Search chapters in this subject"><div class="chapter-grid" id="chapterGrid"></div></div>
-    </section>
+        <section class="panel" id="teachPanel">
+          <div class="panel-heading">
+            <div>
+              <div class="tiny-label">START A LESSON</div>
+              <h2>What are we learning today?</h2>
+              <p>Choose a subject and chapter, or type any topic in your own words.</p>
+            </div><span class="tag orange">ICSE · Class IX</span>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label for="subjectSelect">Subject</label><select id="subjectSelect"></select></div>
+            <div class="field"><label for="chapterSelect">Chapter from your books</label><select id="chapterSelect">
+                <option value="">Choose a chapter (optional)</option>
+              </select></div>
+            <div class="field full"><label for="topicInput">Topic or question</label><input id="topicInput" type="text"
+                placeholder="e.g. Explain cathode rays and how they ionise a gas" autocomplete="off">
+              <div class="subtopic-wrap" id="subtopicWrap"><span class="tiny-label">POPULAR TOPICS IN THIS
+                  SUBJECT</span>
+                <div class="suggestions" id="subtopicChips"></div>
+              </div>
+            </div>
+            <div class="field full"><label for="extraInput">Anything you'd like the teacher to focus on? <span
+                  class="muted" style="font-weight:400">(optional)</span></label><input id="extraInput" type="text"
+                placeholder="e.g. numericals, important exam points, a real-life analogy…"></div>
+            <div class="field"><label for="modelSelect">AI model</label><select id="modelSelect">
+                <option value="deepseek">DeepSeek V4.1 Flash — Everyday use (Recommended)</option>
+                <option value="nano">GPT 5.4 Nano — Quick &amp; simple answers</option>
+                <option value="sol">GPT 6.1 Sol — Advanced reasoning</option>
+                <option value="astra">GPT 6 Astra — Complex problems</option>
+              </select><small id="modelHint" style="color:var(--muted);display:block;margin-top:5px"></small>
+              <div id="modelCostInfo"
+                style="font-size:11px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              </div>
+              <div id="astraWarning" class="hidden"
+                style="background:#fdecec;color:#9b1c1c;border:1px solid #f6c9c9;padding:8px;border-radius:8px;font-size:11px;margin-top:8px">
+              </div>
+            </div>
+            <div class="field"><label id="langLabel">Explain in</label>
+              <div class="seg" role="radiogroup" aria-labelledby="langLabel"><label><input type="radio" name="lang"
+                    value="english" checked><span>English</span></label><label><input type="radio" name="lang"
+                    value="hinglish"><span>Hinglish</span></label><label><input type="radio" name="lang"
+                    value="hindi"><span>हिन्दी</span></label></div>
+            </div>
+          </div>
+          <div class="suggestions"><button type="button" class="suggestion" aria-pressed="false"
+              data-topic="Explain like I am a beginner">Explain from zero</button><button type="button"
+              class="suggestion" aria-pressed="false" data-topic="Give me exam-focused notes">Exam-focused
+              notes</button><button type="button" class="suggestion" aria-pressed="false"
+              data-topic="Use a simple real-life analogy">Real-life analogy</button><button type="button"
+              class="suggestion" aria-pressed="false" data-topic="Include one worked example">Worked example</button>
+          </div>
+          <div class="action-row"><button class="btn btn-primary" id="explainBtn">✦ Teach me</button><button
+              class="btn btn-dark" data-mode="notes">▤ Detailed notes</button><button class="btn btn-light"
+              data-mode="quiz">✎ Quiz me</button><button class="btn btn-light" data-mode="flashcards">▧
+              Flashcards</button><span class="status-line" id="aiStatus">No API key needed · Internet required for
+              AI</span></div>
+          <div class="callout"><span>💡</span>
+            <div><strong>Honest note:</strong> The built-in database is a chapter index based on your uploaded contents
+              pages. The teacher can create detailed explanations using AI without you entering an API key. Live AI and
+              web references need an internet connection; the AI service may ask you to sign in or apply its own usage
+              limits.</div>
+          </div>
+        </section>
 
-    <section class="panel hidden" id="libraryPanel">
-      <div class="panel-heading"><div><div class="tiny-label">SAVED ON THIS DEVICE</div><h2>My study library</h2><p>Keep your explanations ready for revision, even after you close the app. Lessons come up for review after 3 and 7 days.</p></div><button class="btn btn-outline btn-sm" id="backToStudy">← Back to study</button></div>
-      <div id="libraryContent"></div>
-    </section>
-    <div class="footer-note">StudyNest is an independent study helper, not an official CISCE product. Always check your teacher's syllabus and textbook for exact exam requirements.</div>
-  </main>
-</div>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-</div>
-<script>
-const DB = [
- {id:'chem',name:'Chemistry',icon:'⚗️',chapters:[
-  ['The Language of Chemistry','1'],['Chemical Changes and Reactions','27'],['Water','46'],['Atomic Structure and Chemical Bonding','77'],['The Periodic Table','107'],['Study of the First Element — Hydrogen','127'],['Study of Gas Laws','147'],['Atmospheric and Environmental Chemistry','165'],['Practical Work','181']]},
- {id:'bio',name:'Biology',icon:'🌿',chapters:[
-  ['Cell — A Unit of Life','7'],['Tissues','21'],['Flower','40'],['Pollination and Fertilisation','48'],['Structure and Germination of Seeds','59'],['Respiration in Plants','68'],['Diversity in Living Organisms','78'],['Economic Importance of Bacteria and Fungi','93'],['Nutrition','104'],['Dentition','116'],['Digestive System','121'],['Skeleton — Movement and Locomotion','133'],['Skin — Structure and Functions','146'],['Health and Hygiene','156'],['Aids to Health','174']]},
- {id:'math',name:'Mathematics',icon:'📐',chapters:[
-  ['Rational and Irrational Numbers','1'],['Compound Interest','42'],['Expansions','71'],['Factorisation','92'],['Simultaneous Linear Equations','111'],['Problems on Simultaneous Linear Equations','130'],['Indices','149'],['Logarithms','164'],['Triangles','182'],['Mid-point Theorem','230'],['Pythagoras Theorem','247'],['Rectilinear Figures','265'],['Theorems on Area','302'],['Circle','328'],['Mensuration','351'],['Trigonometrical Ratios','411'],['Trigonometrical Ratios of Standard Angles','430'],['Coordinate Geometry','452'],['Statistics','483']]},
- {id:'physics',name:'Physics',icon:'⚡',chapters:[
-  ['Measurements and Experimentation','7'],['Motion in One Dimension','28'],['Laws of Motion','58'],['Fluids','87'],['Heat and Energy','115'],['Light','125'],['Sound','151'],['Electricity and Magnetism','169']]},
- {id:'civics',name:'Civics',icon:'🏛️',chapters:[
-  ['Our Constitution','5'],['Basic Features of the Constitution','14'],['Fundamental Rights and Duties','21'],['Directive Principles of State Policy','31'],['Elections and the Election Commission','37'],['The State Legislature','47']]},
- {id:'history',name:'History',icon:'🏺',chapters:[
-  ['The Harappan Civilization','57'],['The Vedic Period','66'],['Jainism and Buddhism','75'],['The Mauryas','83'],['The Sangam Age','94'],['The Age of the Guptas','101'],['Medieval India: The Cholas','110'],['Medieval India: The Delhi Sultanate','116'],['Medieval India: The Mughal Empire','123'],['Medieval India: A Composite Culture','133'],['The Modern Age in Europe: The Renaissance','144'],['The Modern Age in Europe: The Reformation','149'],['The Modern Age in Europe: The Industrial Revolution','155'],['Art and Architecture During the Ages','164']]},
- {id:'geog',name:'Geography',icon:'🌍',chapters:[
-  ['The Earth as a Planet','7'],['The Geographic Grid: Latitudes and Longitudes','16'],['Rotation and Revolution','27'],['Structure of the Earth','39'],['Landforms of the Earth','46'],['Rocks','56'],['Volcanoes','67'],['Earthquakes','67'],['Weathering','76'],['Denudation','86'],['Hydrosphere','94'],['Composition and Structure of the Atmosphere','106'],['Insolation','118'],['Atmospheric Pressure and Winds','127'],['Humidity','152'],['Pollution — Types and Sources','164'],['Pollution — Effects and Prevention','177'],['Natural Regions of the World','190'],['Map Work','207'],['Study of Maps','216'],['Directions and Scale','225'],['Representation of Relief Features through Contours','233'],['Geo-Glossary','241']]},
- {id:'computer',name:'Computer Applications (Java)',icon:'💻',chapters:[
-  ['Introduction to Object-Oriented Programming Concepts','13'],['Introduction to Java','28'],['Elementary Concept of Objects and Classes','47'],['Basic Structure of a Class in Java','60'],['Operators in Java','95'],['Data Processing in Java','129'],['Mathematical Library Methods','150'],['Conditional Statements in Java','169'],['Looping / Iterative Statements in Java','206'],['Nested for Loop','249'],['Ethical Computing','268']]}
-];
-const SUBTOPICS = {
- chem:['atoms and molecules','chemical equations','valency','water purification','atomic structure','periodic table','hydrogen','Boyle’s law','environmental chemistry'],
- bio:['cell organelles','plant and animal tissues','parts of a flower','pollination','seed germination','photosynthesis vs respiration','animal kingdom','bacteria and fungi','nutrition','types of teeth','human digestive system','skeleton','skin','health and hygiene'],
- math:['rational numbers','compound interest','algebraic identities','factorisation','simultaneous equations','indices laws','logarithms','triangle theorems','Pythagoras theorem','mensuration','trigonometric ratios','coordinate geometry','mean median mode'],
- physics:['least count','vernier calipers','simple pendulum','distance and displacement','velocity and acceleration','Newton’s laws','momentum','pressure in fluids','heat transfer','reflection of light','sound waves','electric current'],
- civics:['constitution','preamble','fundamental rights','directive principles','elections','state legislature'],
- history:['Harappan Civilization','Vedic Period','Jainism and Buddhism','Mauryan Empire','Sangam Age','Gupta Age','Cholas','Delhi Sultanate','Mughal Empire','Renaissance','Reformation','Industrial Revolution'],
- geog:['latitudes and longitudes','rotation and revolution','earth structure','rock cycle','volcanoes','earthquakes','weathering','hydrosphere','atmosphere','insolation','winds','humidity','pollution','map scale','contour lines'],
- computer:['object-oriented programming','class and object','Java data types','variables and constants','operators','Scanner class','exception handling','Math class','if else statements','switch statement','for loop','nested loops','cyber safety']
-};
-const OFFLINE = {
- 'cathode ray':`# Cathode rays and gas ionisation\n\nCathode rays are streams of tiny, negatively charged particles called **electrons**. They are produced in a discharge tube when a high voltage is applied at low gas pressure.\n\n## What happens when cathode rays pass through a gas?\n1. Fast electrons collide with gas atoms.\n2. An electron may be knocked out of an atom.\n3. The atom loses a negative charge and becomes a **positive ion**. The freed electron is negative.\n\nSo, the gas becomes ionised. The positive ions and free electrons together make the gas conduct electricity.\n\n## Remember\n- Cathode rays carry a **negative charge**.\n- The atom left behind after losing an electron is **positive**.\n- Ionisation means making ions by adding or removing electrons.\n\n**Check yourself:** If an atom loses two electrons, what is the sign of its charge?`,
- 'tissues':`# Tissues\n\nA **tissue** is a group of similar cells that work together to do a particular job. Think of it like a team: every member helps complete the same task.\n\n## Plant tissues\n- **Meristematic tissue:** cells divide actively and help a plant grow.\n- **Permanent tissue:** cells have become specialised for jobs such as storage, support, or transport.\n- **Xylem:** carries water and minerals mainly from roots upwards.\n- **Phloem:** transports prepared food around the plant.\n\n## Animal tissues\n- **Epithelial:** covers and protects surfaces.\n- **Connective:** joins, supports, or transports (for example, bone and blood).\n- **Muscular:** contracts to produce movement.\n- **Nervous:** carries messages.\n\n## Key idea\nCells are the basic units; tissues are groups of cells; organs contain different tissues working together.\n\n**Check yourself:** Which plant tissue carries water?`,
- 'motion in one dimension':`# Motion in One Dimension\n\nMotion is a change in position with time. One-dimensional motion happens along a straight line, such as a lift moving up or down.\n\n## Important quantities\n- **Distance:** total path travelled; it is always zero or positive.\n- **Displacement:** change from starting position to ending position, including direction.\n- **Speed:** distance ÷ time.\n- **Velocity:** displacement ÷ time, including direction.\n- **Acceleration:** change in velocity ÷ time.\n\n## Useful equations for uniform acceleration\n- v = u + at\n- s = ut + ½at²\n- v² = u² + 2as\n\nHere, u = initial velocity, v = final velocity, a = acceleration, t = time, and s = displacement. Use consistent SI units.\n\n**Worked example:** A cyclist's velocity rises from 2 m/s to 8 m/s in 3 s. Average acceleration = (8 − 2) ÷ 3 = **2 m/s²**.\n\n**Check yourself:** Can displacement be zero even when distance is not zero?`,
- 'laws of motion':`# Newton's Laws of Motion\n\n## First law — inertia\nAn object stays at rest or continues moving at constant velocity in a straight line unless an unbalanced external force acts on it. **Inertia** is an object's resistance to a change in motion. More mass means more inertia.\n\n## Second law\nThe rate of change of momentum is proportional to the net force and occurs in the direction of that force. For constant mass: **F = ma**. Force is measured in newtons (N).\n\n## Third law\nFor every action force, there is an equal and opposite reaction force. The forces act on **different objects**, so they do not cancel each other on one object.\n\n## Everyday example\nWhen you jump, your feet push the ground down and the ground pushes you up.\n\n**Check yourself:** Why do passengers tend to move forward when a moving bus stops suddenly?`,
- 'atomic structure':`# Atomic Structure\n\nAn atom contains a tiny, dense **nucleus** surrounded by electrons. The nucleus contains positively charged protons and neutral neutrons. Electrons carry a negative charge.\n\n- **Atomic number (Z)** = number of protons.\n- In a neutral atom, number of electrons = number of protons.\n- **Mass number (A)** = protons + neutrons.\n- Number of neutrons = A − Z.\n\n## Example\nA neutral atom has atomic number 11 and mass number 23. It has 11 protons, 11 electrons, and 23 − 11 = 12 neutrons.\n\nAtoms can gain or lose electrons to form ions. Losing electrons produces a positive ion; gaining electrons produces a negative ion.\n\n**Check yourself:** How many neutrons are in an atom with A = 35 and Z = 17?`,
- 'class and object':`# Class and Object in Java\n\nA **class** is a blueprint that describes data and behaviour. An **object** is a real instance made from that blueprint.\n\nImagine a class called ` + '`Student`' + `: it describes each student's name and age. Objects could be ` + '`rahul`' + ` and ` + '`aman`' + `, each with its own values.\n\n\`\`\`java\nclass Student {\n    String name;\n    int age;\n\n    Student(String n, int a) {\n        name = n;\n        age = a;\n    }\n}\n\nStudent s1 = new Student("Rahul", 14);\n\`\`\`\n\nA **constructor** runs when an object is created and usually sets its initial state. Its name must match the class name and it has no return type.\n\n**Check yourself:** In this example, what is the class and what is the object stored in ` + '`s1`' + `?`,
- 'fundamental rights':`# Fundamental Rights and Duties\n\nFundamental Rights are basic protections guaranteed by the Constitution of India. They protect people's freedom, equality, and dignity. The exact legal scope depends on the Constitution and court interpretation.\n\nIn the Indian Constitution, the commonly taught categories are: Right to Equality; Right to Freedom; Right against Exploitation; Right to Freedom of Religion; Cultural and Educational Rights; and Right to Constitutional Remedies.\n\n**Fundamental Duties** describe responsibilities citizens should respect, such as respecting the Constitution and national symbols, protecting the environment, and promoting harmony. Duties and rights are related but are not the same thing.\n\nFor school answers, learn each right's key idea, one example, and why it matters.\n\n**Check yourself:** Why is the Right to Constitutional Remedies important?`,
- 'pollination':`# Pollination and Fertilisation\n\n**Pollination** is the transfer of pollen grains from the anther to the stigma of a flower. It happens before fertilisation.\n\n- **Self-pollination:** pollen reaches the stigma of the same flower or another flower on the same plant.\n- **Cross-pollination:** pollen is transferred to a flower on another plant of the same species.\n- Agents include wind, water, and animals such as insects.\n\nAfter a compatible pollen grain lands on the stigma, it may germinate and grow a pollen tube through the style toward the ovule. The male gamete travels through this tube. In flowering plants, fertilisation leads to a zygote; the ovule usually develops into a seed and the ovary into a fruit.\n\n**Check yourself:** What is the difference between pollination and fertilisation?`,
- 'logarithms':`# Logarithms\n\nA logarithm answers the question: **what power do we raise the base to in order to get a number?**\n\nIf aᵇ = N, then logₐ N = b. For real logarithms, a must be positive and not 1, and N must be positive.\n\nExamples: 2³ = 8, so log₂ 8 = 3. Also, 10² = 100, so log₁₀ 100 = 2.\n\n## Main laws (valid for suitable positive numbers and a valid base)\n- logₐ(MN) = logₐ M + logₐ N\n- logₐ(M/N) = logₐ M − logₐ N\n- logₐ(Mʳ) = r logₐ M\n\nCommon mistake: log(M + N) is **not** usually equal to log M + log N.\n\n**Check yourself:** If 3⁴ = 81, what is log₃ 81?`,
- 'weathering':`# Weathering\n\n**Weathering** is the breakdown of rocks at or near Earth's surface without the broken material necessarily being carried away. **Erosion** is different: it involves wearing away and transporting material.\n\n## Main types\n- **Physical (mechanical):** rock breaks into smaller pieces without a chemical change, for example through heating and cooling or frost action.\n- **Chemical:** minerals change through reactions with water, oxygen, or acids.\n- **Biological:** living organisms, such as plant roots, help break rock apart or alter it.\n\nWeathering helps form soil and creates loose material that can later be transported by water, wind, ice, or gravity. The rate depends on climate, rock type, slope, and vegetation.\n\n**Check yourself:** How is weathering different from erosion?`,
- 'simple pendulum':`# Simple Pendulum\n\nA simple pendulum is an idealised small bob hanging from a fixed point by a light string. When displaced slightly and released, it swings to and fro.\n\n- **Amplitude:** greatest displacement from the mean position.\n- **Time period (T):** time for one complete oscillation.\n- **Frequency (f):** oscillations per second; f = 1/T.\n\nFor small swings, the time period is approximately **T = 2π√(l/g)**, where l is the pendulum length and g is gravitational acceleration. A longer pendulum has a longer time period. For small oscillations, the mass of the bob does not affect the time period.\n\n**Check yourself:** What happens to the time period if the pendulum length increases?`,
- 'cell':`# The Cell — Unit of Life\n\nThe **cell** is the basic structural and functional unit of living organisms. Some organisms consist of one cell; plants and animals are made of many cells.\n\n- **Cell membrane:** controls movement of substances in and out.\n- **Cytoplasm:** jelly-like region where many chemical reactions occur.\n- **Nucleus:** contains genetic material and helps control cell activities in most eukaryotic cells.\n- **Mitochondria:** release usable energy during cellular respiration.\n- **Chloroplasts:** in photosynthetic plant cells, contain chlorophyll to absorb light.\n- **Vacuole:** storage; plant cells commonly have a large central vacuole.\n\nPlant cells usually have a cellulose cell wall and chloroplasts in photosynthetic parts; animal cells do not have a cell wall.\n\n**Check yourself:** Which organelle is strongly associated with aerobic respiration?`,
- 'chemical equations':`# Chemical Equations\n\nA chemical equation represents a chemical reaction using symbols and formulae. Reactants are written on the left and products on the right.\n\nExample: **2H₂ + O₂ → 2H₂O**. The coefficients show the relative numbers of particles or moles.\n\n## Why balance it?\nAtoms are not created or destroyed in an ordinary chemical reaction, so each element must have the same number of atoms on both sides. Change **coefficients**, not the small numbers within a chemical formula.\n\nTry counting hydrogen and oxygen atoms on both sides of the example. There are four H atoms and two O atoms on each side.\n\n**Check yourself:** Why would changing H₂O to H₂O₂ change the substance rather than simply balance the equation?`,
- 'distance and displacement':`# Distance and Displacement\n\n**Distance** is the total length of the path travelled. **Displacement** is the straight-line change from the starting position to the finishing position, with direction.\n\nExample: walk 3 m east, then 3 m west. Distance = 3 + 3 = 6 m. Final position is where you started, so displacement = 0 m.\n\nDistance is a scalar (size only); displacement is a vector (size and direction). Distance is never negative, but displacement can be positive, negative, or zero depending on the chosen direction.\n\n**Check yourself:** Can displacement's magnitude ever be greater than distance? Explain why.`,
- 'earth as a planet':`# Earth as a Planet\n\nEarth is the third planet from the Sun and the only planet currently known to support life. It has liquid water at the surface, a protective atmosphere, and a suitable range of conditions for many living things.\n\nEarth is nearly spherical but slightly flattened at the poles and wider around the equator. It rotates on its axis, giving day and night, and revolves around the Sun, producing a year. Earth's axis is tilted, which is a key reason for the seasons.\n\n## Key terms\n- **Axis:** an imaginary line through the poles around which Earth rotates.\n- **Orbit:** the path followed by Earth around the Sun.\n- **Equator:** imaginary great circle halfway between the poles.\n\n**Check yourself:** Which movement of Earth causes the cycle of day and night?`
-};
+        <section class="panel lesson-panel" id="lessonPanel">
+          <div class="lesson-top">
+            <div>
+              <div class="tiny-label" id="lessonKicker">READY WHEN YOU ARE</div>
+              <h2 class="lesson-title" id="lessonTitle" tabindex="-1">Your lesson will appear here</h2>
+              <div class="lesson-meta" id="lessonMeta"></div>
+            </div>
+            <div class="lesson-actions hidden" id="lessonActions"><button class="btn btn-light btn-sm"
+                id="saveLessonBtn" aria-pressed="false">♡ Save</button><button class="btn btn-light btn-sm"
+                id="copyLessonBtn">⧉ Copy</button><button class="btn btn-light btn-sm" id="printLessonBtn">⎙
+                Print</button><button class="btn btn-outline btn-sm" id="newLessonBtn"
+                title="Clear this lesson and start a new one">✕ New</button></div>
+          </div>
+          <div class="lesson-body" id="lessonBody" aria-live="polite">
+            <div class="empty-state">
+              <div class="empty-icon">🧠</div>
+              <h3>Curiosity is a great place to start.</h3>
+              <p>Pick any subject, choose a chapter or type a question, then press <strong>Teach me</strong>. I'll break
+                it into small, understandable steps.</p>
+            </div>
+          </div>
+          <div class="quiz-box hidden" id="quizBox">
+            <div class="tiny-label">CHECK YOUR ANSWERS</div><label for="quizAnswers" class="muted"
+              style="font-size:12px;display:block;margin-top:4px">Type your answers (like <span class="kbd">1-B, 2-D,
+                3-A…</span> or short written answers). The teacher will mark them and explain any
+              mistakes.</label><textarea id="quizAnswers" placeholder="1-B, 2-A, 3-C…"></textarea>
+            <div class="action-row" style="margin-top:10px"><button class="btn btn-primary btn-sm" id="gradeBtn">✓ Check
+                my answers</button></div>
+            <div class="quiz-feedback hidden" id="quizFeedback" aria-live="polite"></div>
+          </div>
+          <div class="refine-row hidden" id="refineRow"><span class="tiny-label">NOT QUITE RIGHT?</span>
+            <button class="btn btn-outline btn-sm" data-refine="" data-force="1">↻ Regenerate</button>
+            <button class="btn btn-outline btn-sm"
+              data-refine="Explain this more simply, with shorter sentences, easier words and one extra everyday example.">Explain
+              simpler</button>
+            <button class="btn btn-outline btn-sm"
+              data-refine="Make this more challenging and exam-focused: go deeper, add tougher practice and higher-order thinking.">Make
+              harder</button>
+            <button class="btn btn-outline btn-sm"
+              data-refine="Write the whole response in simple Hindi (Devanagari script). Keep scientific and technical terms in English in brackets the first time they appear.">Translate
+              to Hindi</button>
+          </div>
+          <div class="reference-wrap hidden" id="referencesWrap">
+            <div class="tiny-label">WEB READING · WIKIPEDIA</div>
+            <div class="reference-grid" id="referenceGrid"></div>
+          </div>
+        </section>
 
-const $=id=>document.getElementById(id);
-const DAY=86400000, TOAST_MS=3200, AI_TIMEOUT=60000, SOL_TIMEOUT=210000, WIKI_TIMEOUT=5000;
-const STORAGE='studynest_lessons_v1', STORAGE_MODEL='studynest_preferred_model', LS_LANG='studynest_language_v1', LS_SEL='studynest_selection_v1', LS_PROG='studynest_progress_v1', LS_CACHE='studynest_cache_v1';
-const MODELS={
- sol:{name:'GPT 6.1 Sol',id:'openai/gpt-6.1-sol',note:'Everyday use',timeout:SOL_TIMEOUT},
- astra:{name:'GPT 6 Astra',id:'openai/gpt-6-astra',note:'Complex problems and advanced reasoning'},
- nano:{name:'GPT 5.4 Nano',id:'openai/gpt-5.4-nano',note:'Quick and simple answers'},
- deepseek:{name:'DeepSeek V4.1 Flash',id:'deepseek/deepseek-v4.1-flash',note:'Another efficient model for regular explanations '}
-};
-const LANG_RULES={
- english:'LANGUAGE: Write in clear, simple English.',
- hinglish:'LANGUAGE: Write in simple Hinglish: Hindi written in Roman letters mixed naturally with English, the way a friendly Indian teacher talks in class. Keep scientific/technical terms, formulas and headings in English.',
- hindi:'LANGUAGE: Write in simple Hindi using Devanagari script. Keep scientific/technical terms in English in brackets the first time they appear, and keep formulas unchanged.'
-};
-const MODE_LABEL={explain:'Explanation',notes:'Detailed notes',quiz:'Quiz',flashcards:'Flashcards'};
-let selectedSubject='bio', selectedModel='sol', selectedLang='english', currentLesson=null, currentRefs=[], busy=false, grading=false, EMPTY_HTML='';
+        <section class="panel" id="databasePanel">
+          <div class="panel-heading">
+            <div>
+              <div class="tiny-label">BUILT-IN CHAPTER INDEX</div>
+              <h2 id="indexTitle">Browse your chapters</h2>
+              <p>Tap any chapter to start learning it. Page numbers are the ones shown in your contents pages.</p>
+            </div><button class="btn btn-outline btn-sm" id="toggleIndex">Hide index</button>
+          </div>
+          <div id="indexContent"><input class="chapter-filter" id="chapterFilter" type="search"
+              placeholder="⌕ Search chapters in this subject…" aria-label="Search chapters in this subject">
+            <div class="chapter-grid" id="chapterGrid"></div>
+          </div>
+        </section>
 
-/* ---------- storage helpers ---------- */
-function lsGet(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch{return d}}
-function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch{return false}}
-function rawGet(k){try{return localStorage.getItem(k)}catch{return null}}
-function rawSet(k,v){try{localStorage.setItem(k,v)}catch{}}
-function getSaved(){return lsGet(STORAGE,[])}
-function setSaved(a){if(!lsSet(STORAGE,a))showToast('Could not save: this browser blocked storage.');updateSavedCount();renderResume()}
-/* ---------- account sync: saved lessons follow the signed-in account (Netlify DB via /api/lessons) ----------
-   Not signed in = browser-only, exactly as before. Signed in = this device's list is merged with the account's list. */
-const LS_SYNCED='studynest_synced_user_v1',LS_PENDING='studynest_pending_delete_v1',LESSONS_API='/api/lessons',META_KEYS=['subjectId','chapter','baseExtra','refine','lang','stage','reviewAt'];
-let signedIn=false,syncing=null;
-function lessonToServer(x){const meta={};META_KEYS.forEach(k=>{if(x[k]!==undefined)meta[k]=x[k]});return{id:x.id,subject:x.subject,topic:x.topic,mode:x.mode,text:x.text,offline:!!x.offline,created:x.created,model:x.model||'',fallback:!!x.fallback,requested:x.requested||'',meta}}
-function lessonsApi(method,qs,body){return fetch(LESSONS_API+(qs||''),{method,credentials:'same-origin',headers:body?{'Content-Type':'application/json'}:undefined,body:body?JSON.stringify(body):undefined})}
-async function pushLesson(x){if(!signedIn||!x)return;try{const r=await lessonsApi('POST','',lessonToServer(x));if(r.status===401){signedIn=false;return}
- if(r.ok){const j=await r.json();if(j.lesson&&j.lesson.id!==x.id){const a=getSaved(),m=a.find(y=>y.id===x.id);if(m){m.id=j.lesson.id;lsSet(STORAGE,a)}}}}catch{}}
-function queueDelete(id){const p=lsGet(LS_PENDING,[]);if(!p.includes(id)){p.push(id);lsSet(LS_PENDING,p)}}
-function unqueueDelete(id){lsSet(LS_PENDING,lsGet(LS_PENDING,[]).filter(i=>i!==id))}
-// A delete the server did not confirm is queued and retried on the next sync, so it can never "come back".
-// When signed out, only queue if this device was previously synced to an account (e.g. the session expired);
-// a device that never synced has nothing on the server to delete.
-async function deleteRemote(id){if(!id)return;if(!signedIn){if(rawGet(LS_SYNCED))queueDelete(id);return}
- try{const r=await lessonsApi('DELETE','?id='+encodeURIComponent(id));if(!r.ok){if(r.status===401)signedIn=false;queueDelete(id)}}catch{queueDelete(id)}}
-async function clearRemote(){if(!signedIn){if(rawGet(LS_SYNCED))queueDelete('*');return}
- try{const r=await lessonsApi('DELETE','?all=true');if(!r.ok){if(r.status===401)signedIn=false;queueDelete('*')}}catch{queueDelete('*')}}
-function syncFromServer(){if(syncing)return syncing;
- syncing=(async()=>{try{
-  let pend=lsGet(LS_PENDING,[]);
-  if(pend.length){const left=[];for(const id of pend){try{const r=await lessonsApi('DELETE',id==='*'?'?all=true':'?id='+encodeURIComponent(id));if(!r.ok)left.push(id)}catch{left.push(id)}}lsSet(LS_PENDING,left);pend=left}
-  const res=await lessonsApi('GET');
-  if(res.status===401){signedIn=false;return}
-  if(!res.ok)return;
-  const data=await res.json();signedIn=true;
-  const server=pend.includes('*')?[]:(data.lessons||[]).filter(x=>!pend.includes(x.id));
-  const merged=server.slice(),toPush=[];
-  getSaved().forEach(l=>{const i=merged.findIndex(x=>sameLesson(x,l));
-   if(i<0){merged.push(l);toPush.push(l)}
-   else if((l.created||0)>(merged[i].created||0)){const m={...l,id:merged[i].id};merged[i]=m;toPush.push(m)}});
-  merged.sort((a,b)=>(b.created||0)-(a.created||0));
-  setSaved(merged.slice(0,120));
-  if(!$('libraryPanel').classList.contains('hidden'))renderLibrary();
-  for(const l of toPush)await pushLesson(l);
- }catch{}finally{syncing=null}})();return syncing}
-window.addEventListener('studynest-auth',e=>{const d=e.detail||{};
- if(d.type==='logout'){signedIn=false;if(rawGet(LS_SYNCED)){rawSet(LS_SYNCED,'');lsSet(LS_PENDING,[]);setSaved([]);if(!$('libraryPanel').classList.contains('hidden'))renderLibrary()}return}
- if(!d.userId){signedIn=false;return}
- signedIn=true;
- if(d.type==='init'||d.type==='login'){const prev=rawGet(LS_SYNCED);if(prev&&prev!==d.userId){lsSet(LS_PENDING,[]);setSaved([])}rawSet(LS_SYNCED,d.userId);syncFromServer()}});
-function totalChapters(){return DB.reduce((n,s)=>n+s.chapters.length,0)}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-let toastTimer=null;
-function showToast(s){const t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),TOAST_MS)}
-function currentSubject(){return DB.find(s=>s.id===selectedSubject)||DB[0]}
-function getModelConfig(k){return MODELS[k]||MODELS.sol}
-function updateModelHint(){const m=getModelConfig(selectedModel);$('modelHint').textContent=m.name+' · '+m.note}
-function saveSelection(){lsSet(LS_SEL,{subject:selectedSubject,chapter:$('chapterSelect').value})}
+        <section class="panel hidden" id="libraryPanel">
+          <div class="panel-heading">
+            <div>
+              <div class="tiny-label">SAVED ON THIS DEVICE</div>
+              <h2>My study library</h2>
+              <p>Keep your explanations ready for revision, even after you close the app. Lessons come up for review
+                after 3 and 7 days.</p>
+            </div><button class="btn btn-outline btn-sm" id="backToStudy">← Back to study</button>
+          </div>
+          <div id="libraryContent"></div>
+        </section>
+        <div class="footer-note">StudyNest is an independent study helper, not an official CISCE product. Always check
+          your teacher's syllabus and textbook for exact exam requirements.</div>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+  <script>
+    const DB = [
+      {
+        id: 'chem', name: 'Chemistry', icon: '⚗️', chapters: [
+          ['The Language of Chemistry', '1'], ['Chemical Changes and Reactions', '27'], ['Water', '46'], ['Atomic Structure and Chemical Bonding', '77'], ['The Periodic Table', '107'], ['Study of the First Element — Hydrogen', '127'], ['Study of Gas Laws', '147'], ['Atmospheric and Environmental Chemistry', '165'], ['Practical Work', '181']]
+      },
+      {
+        id: 'bio', name: 'Biology', icon: '🌿', chapters: [
+          ['Cell — A Unit of Life', '7'], ['Tissues', '21'], ['Flower', '40'], ['Pollination and Fertilisation', '48'], ['Structure and Germination of Seeds', '59'], ['Respiration in Plants', '68'], ['Diversity in Living Organisms', '78'], ['Economic Importance of Bacteria and Fungi', '93'], ['Nutrition', '104'], ['Dentition', '116'], ['Digestive System', '121'], ['Skeleton — Movement and Locomotion', '133'], ['Skin — Structure and Functions', '146'], ['Health and Hygiene', '156'], ['Aids to Health', '174']]
+      },
+      {
+        id: 'math', name: 'Mathematics', icon: '📐', chapters: [
+          ['Rational and Irrational Numbers', '1'], ['Compound Interest', '42'], ['Expansions', '71'], ['Factorisation', '92'], ['Simultaneous Linear Equations', '111'], ['Problems on Simultaneous Linear Equations', '130'], ['Indices', '149'], ['Logarithms', '164'], ['Triangles', '182'], ['Mid-point Theorem', '230'], ['Pythagoras Theorem', '247'], ['Rectilinear Figures', '265'], ['Theorems on Area', '302'], ['Circle', '328'], ['Mensuration', '351'], ['Trigonometrical Ratios', '411'], ['Trigonometrical Ratios of Standard Angles', '430'], ['Coordinate Geometry', '452'], ['Statistics', '483']]
+      },
+      {
+        id: 'physics', name: 'Physics', icon: '⚡', chapters: [
+          ['Measurements and Experimentation', '7'], ['Motion in One Dimension', '28'], ['Laws of Motion', '58'], ['Fluids', '87'], ['Heat and Energy', '115'], ['Light', '125'], ['Sound', '151'], ['Electricity and Magnetism', '169']]
+      },
+      {
+        id: 'civics', name: 'Civics', icon: '🏛️', chapters: [
+          ['Our Constitution', '5'], ['Basic Features of the Constitution', '14'], ['Fundamental Rights and Duties', '21'], ['Directive Principles of State Policy', '31'], ['Elections and the Election Commission', '37'], ['The State Legislature', '47']]
+      },
+      {
+        id: 'history', name: 'History', icon: '🏺', chapters: [
+          ['The Harappan Civilization', '57'], ['The Vedic Period', '66'], ['Jainism and Buddhism', '75'], ['The Mauryas', '83'], ['The Sangam Age', '94'], ['The Age of the Guptas', '101'], ['Medieval India: The Cholas', '110'], ['Medieval India: The Delhi Sultanate', '116'], ['Medieval India: The Mughal Empire', '123'], ['Medieval India: A Composite Culture', '133'], ['The Modern Age in Europe: The Renaissance', '144'], ['The Modern Age in Europe: The Reformation', '149'], ['The Modern Age in Europe: The Industrial Revolution', '155'], ['Art and Architecture During the Ages', '164']]
+      },
+      {
+        id: 'geog', name: 'Geography', icon: '🌍', chapters: [
+          ['The Earth as a Planet', '7'], ['The Geographic Grid: Latitudes and Longitudes', '16'], ['Rotation and Revolution', '27'], ['Structure of the Earth', '39'], ['Landforms of the Earth', '46'], ['Rocks', '56'], ['Volcanoes', '67'], ['Earthquakes', '67'], ['Weathering', '76'], ['Denudation', '86'], ['Hydrosphere', '94'], ['Composition and Structure of the Atmosphere', '106'], ['Insolation', '118'], ['Atmospheric Pressure and Winds', '127'], ['Humidity', '152'], ['Pollution — Types and Sources', '164'], ['Pollution — Effects and Prevention', '177'], ['Natural Regions of the World', '190'], ['Map Work', '207'], ['Study of Maps', '216'], ['Directions and Scale', '225'], ['Representation of Relief Features through Contours', '233'], ['Geo-Glossary', '241']]
+      },
+      {
+        id: 'computer', name: 'Computer Applications (Java)', icon: '💻', chapters: [
+          ['Introduction to Object-Oriented Programming Concepts', '13'], ['Introduction to Java', '28'], ['Elementary Concept of Objects and Classes', '47'], ['Basic Structure of a Class in Java', '60'], ['Operators in Java', '95'], ['Data Processing in Java', '129'], ['Mathematical Library Methods', '150'], ['Conditional Statements in Java', '169'], ['Looping / Iterative Statements in Java', '206'], ['Nested for Loop', '249'], ['Ethical Computing', '268']]
+      }
+    ];
+    const SUBTOPICS = {
+      chem: ['atoms and molecules', 'chemical equations', 'valency', 'water purification', 'atomic structure', 'periodic table', 'hydrogen', 'Boyle’s law', 'environmental chemistry'],
+      bio: ['cell organelles', 'plant and animal tissues', 'parts of a flower', 'pollination', 'seed germination', 'photosynthesis vs respiration', 'animal kingdom', 'bacteria and fungi', 'nutrition', 'types of teeth', 'human digestive system', 'skeleton', 'skin', 'health and hygiene'],
+      math: ['rational numbers', 'compound interest', 'algebraic identities', 'factorisation', 'simultaneous equations', 'indices laws', 'logarithms', 'triangle theorems', 'Pythagoras theorem', 'mensuration', 'trigonometric ratios', 'coordinate geometry', 'mean median mode'],
+      physics: ['least count', 'vernier calipers', 'simple pendulum', 'distance and displacement', 'velocity and acceleration', 'Newton’s laws', 'momentum', 'pressure in fluids', 'heat transfer', 'reflection of light', 'sound waves', 'electric current'],
+      civics: ['constitution', 'preamble', 'fundamental rights', 'directive principles', 'elections', 'state legislature'],
+      history: ['Harappan Civilization', 'Vedic Period', 'Jainism and Buddhism', 'Mauryan Empire', 'Sangam Age', 'Gupta Age', 'Cholas', 'Delhi Sultanate', 'Mughal Empire', 'Renaissance', 'Reformation', 'Industrial Revolution'],
+      geog: ['latitudes and longitudes', 'rotation and revolution', 'earth structure', 'rock cycle', 'volcanoes', 'earthquakes', 'weathering', 'hydrosphere', 'atmosphere', 'insolation', 'winds', 'humidity', 'pollution', 'map scale', 'contour lines'],
+      computer: ['object-oriented programming', 'class and object', 'Java data types', 'variables and constants', 'operators', 'Scanner class', 'exception handling', 'Math class', 'if else statements', 'switch statement', 'for loop', 'nested loops', 'cyber safety']
+    };
+    const OFFLINE = {
+      'cathode ray': `# Cathode rays and gas ionisation\n\nCathode rays are streams of tiny, negatively charged particles called **electrons**. They are produced in a discharge tube when a high voltage is applied at low gas pressure.\n\n## What happens when cathode rays pass through a gas?\n1. Fast electrons collide with gas atoms.\n2. An electron may be knocked out of an atom.\n3. The atom loses a negative charge and becomes a **positive ion**. The freed electron is negative.\n\nSo, the gas becomes ionised. The positive ions and free electrons together make the gas conduct electricity.\n\n## Remember\n- Cathode rays carry a **negative charge**.\n- The atom left behind after losing an electron is **positive**.\n- Ionisation means making ions by adding or removing electrons.\n\n**Check yourself:** If an atom loses two electrons, what is the sign of its charge?`,
+      'tissues': `# Tissues\n\nA **tissue** is a group of similar cells that work together to do a particular job. Think of it like a team: every member helps complete the same task.\n\n## Plant tissues\n- **Meristematic tissue:** cells divide actively and help a plant grow.\n- **Permanent tissue:** cells have become specialised for jobs such as storage, support, or transport.\n- **Xylem:** carries water and minerals mainly from roots upwards.\n- **Phloem:** transports prepared food around the plant.\n\n## Animal tissues\n- **Epithelial:** covers and protects surfaces.\n- **Connective:** joins, supports, or transports (for example, bone and blood).\n- **Muscular:** contracts to produce movement.\n- **Nervous:** carries messages.\n\n## Key idea\nCells are the basic units; tissues are groups of cells; organs contain different tissues working together.\n\n**Check yourself:** Which plant tissue carries water?`,
+      'motion in one dimension': `# Motion in One Dimension\n\nMotion is a change in position with time. One-dimensional motion happens along a straight line, such as a lift moving up or down.\n\n## Important quantities\n- **Distance:** total path travelled; it is always zero or positive.\n- **Displacement:** change from starting position to ending position, including direction.\n- **Speed:** distance ÷ time.\n- **Velocity:** displacement ÷ time, including direction.\n- **Acceleration:** change in velocity ÷ time.\n\n## Useful equations for uniform acceleration\n- v = u + at\n- s = ut + ½at²\n- v² = u² + 2as\n\nHere, u = initial velocity, v = final velocity, a = acceleration, t = time, and s = displacement. Use consistent SI units.\n\n**Worked example:** A cyclist's velocity rises from 2 m/s to 8 m/s in 3 s. Average acceleration = (8 − 2) ÷ 3 = **2 m/s²**.\n\n**Check yourself:** Can displacement be zero even when distance is not zero?`,
+      'laws of motion': `# Newton's Laws of Motion\n\n## First law — inertia\nAn object stays at rest or continues moving at constant velocity in a straight line unless an unbalanced external force acts on it. **Inertia** is an object's resistance to a change in motion. More mass means more inertia.\n\n## Second law\nThe rate of change of momentum is proportional to the net force and occurs in the direction of that force. For constant mass: **F = ma**. Force is measured in newtons (N).\n\n## Third law\nFor every action force, there is an equal and opposite reaction force. The forces act on **different objects**, so they do not cancel each other on one object.\n\n## Everyday example\nWhen you jump, your feet push the ground down and the ground pushes you up.\n\n**Check yourself:** Why do passengers tend to move forward when a moving bus stops suddenly?`,
+      'atomic structure': `# Atomic Structure\n\nAn atom contains a tiny, dense **nucleus** surrounded by electrons. The nucleus contains positively charged protons and neutral neutrons. Electrons carry a negative charge.\n\n- **Atomic number (Z)** = number of protons.\n- In a neutral atom, number of electrons = number of protons.\n- **Mass number (A)** = protons + neutrons.\n- Number of neutrons = A − Z.\n\n## Example\nA neutral atom has atomic number 11 and mass number 23. It has 11 protons, 11 electrons, and 23 − 11 = 12 neutrons.\n\nAtoms can gain or lose electrons to form ions. Losing electrons produces a positive ion; gaining electrons produces a negative ion.\n\n**Check yourself:** How many neutrons are in an atom with A = 35 and Z = 17?`,
+      'class and object': `# Class and Object in Java\n\nA **class** is a blueprint that describes data and behaviour. An **object** is a real instance made from that blueprint.\n\nImagine a class called ` + '`Student`' + `: it describes each student's name and age. Objects could be ` + '`rahul`' + ` and ` + '`aman`' + `, each with its own values.\n\n\`\`\`java\nclass Student {\n    String name;\n    int age;\n\n    Student(String n, int a) {\n        name = n;\n        age = a;\n    }\n}\n\nStudent s1 = new Student("Rahul", 14);\n\`\`\`\n\nA **constructor** runs when an object is created and usually sets its initial state. Its name must match the class name and it has no return type.\n\n**Check yourself:** In this example, what is the class and what is the object stored in ` + '`s1`' + `?`,
+      'fundamental rights': `# Fundamental Rights and Duties\n\nFundamental Rights are basic protections guaranteed by the Constitution of India. They protect people's freedom, equality, and dignity. The exact legal scope depends on the Constitution and court interpretation.\n\nIn the Indian Constitution, the commonly taught categories are: Right to Equality; Right to Freedom; Right against Exploitation; Right to Freedom of Religion; Cultural and Educational Rights; and Right to Constitutional Remedies.\n\n**Fundamental Duties** describe responsibilities citizens should respect, such as respecting the Constitution and national symbols, protecting the environment, and promoting harmony. Duties and rights are related but are not the same thing.\n\nFor school answers, learn each right's key idea, one example, and why it matters.\n\n**Check yourself:** Why is the Right to Constitutional Remedies important?`,
+      'pollination': `# Pollination and Fertilisation\n\n**Pollination** is the transfer of pollen grains from the anther to the stigma of a flower. It happens before fertilisation.\n\n- **Self-pollination:** pollen reaches the stigma of the same flower or another flower on the same plant.\n- **Cross-pollination:** pollen is transferred to a flower on another plant of the same species.\n- Agents include wind, water, and animals such as insects.\n\nAfter a compatible pollen grain lands on the stigma, it may germinate and grow a pollen tube through the style toward the ovule. The male gamete travels through this tube. In flowering plants, fertilisation leads to a zygote; the ovule usually develops into a seed and the ovary into a fruit.\n\n**Check yourself:** What is the difference between pollination and fertilisation?`,
+      'logarithms': `# Logarithms\n\nA logarithm answers the question: **what power do we raise the base to in order to get a number?**\n\nIf aᵇ = N, then logₐ N = b. For real logarithms, a must be positive and not 1, and N must be positive.\n\nExamples: 2³ = 8, so log₂ 8 = 3. Also, 10² = 100, so log₁₀ 100 = 2.\n\n## Main laws (valid for suitable positive numbers and a valid base)\n- logₐ(MN) = logₐ M + logₐ N\n- logₐ(M/N) = logₐ M − logₐ N\n- logₐ(Mʳ) = r logₐ M\n\nCommon mistake: log(M + N) is **not** usually equal to log M + log N.\n\n**Check yourself:** If 3⁴ = 81, what is log₃ 81?`,
+      'weathering': `# Weathering\n\n**Weathering** is the breakdown of rocks at or near Earth's surface without the broken material necessarily being carried away. **Erosion** is different: it involves wearing away and transporting material.\n\n## Main types\n- **Physical (mechanical):** rock breaks into smaller pieces without a chemical change, for example through heating and cooling or frost action.\n- **Chemical:** minerals change through reactions with water, oxygen, or acids.\n- **Biological:** living organisms, such as plant roots, help break rock apart or alter it.\n\nWeathering helps form soil and creates loose material that can later be transported by water, wind, ice, or gravity. The rate depends on climate, rock type, slope, and vegetation.\n\n**Check yourself:** How is weathering different from erosion?`,
+      'simple pendulum': `# Simple Pendulum\n\nA simple pendulum is an idealised small bob hanging from a fixed point by a light string. When displaced slightly and released, it swings to and fro.\n\n- **Amplitude:** greatest displacement from the mean position.\n- **Time period (T):** time for one complete oscillation.\n- **Frequency (f):** oscillations per second; f = 1/T.\n\nFor small swings, the time period is approximately **T = 2π√(l/g)**, where l is the pendulum length and g is gravitational acceleration. A longer pendulum has a longer time period. For small oscillations, the mass of the bob does not affect the time period.\n\n**Check yourself:** What happens to the time period if the pendulum length increases?`,
+      'cell': `# The Cell — Unit of Life\n\nThe **cell** is the basic structural and functional unit of living organisms. Some organisms consist of one cell; plants and animals are made of many cells.\n\n- **Cell membrane:** controls movement of substances in and out.\n- **Cytoplasm:** jelly-like region where many chemical reactions occur.\n- **Nucleus:** contains genetic material and helps control cell activities in most eukaryotic cells.\n- **Mitochondria:** release usable energy during cellular respiration.\n- **Chloroplasts:** in photosynthetic plant cells, contain chlorophyll to absorb light.\n- **Vacuole:** storage; plant cells commonly have a large central vacuole.\n\nPlant cells usually have a cellulose cell wall and chloroplasts in photosynthetic parts; animal cells do not have a cell wall.\n\n**Check yourself:** Which organelle is strongly associated with aerobic respiration?`,
+      'chemical equations': `# Chemical Equations\n\nA chemical equation represents a chemical reaction using symbols and formulae. Reactants are written on the left and products on the right.\n\nExample: **2H₂ + O₂ → 2H₂O**. The coefficients show the relative numbers of particles or moles.\n\n## Why balance it?\nAtoms are not created or destroyed in an ordinary chemical reaction, so each element must have the same number of atoms on both sides. Change **coefficients**, not the small numbers within a chemical formula.\n\nTry counting hydrogen and oxygen atoms on both sides of the example. There are four H atoms and two O atoms on each side.\n\n**Check yourself:** Why would changing H₂O to H₂O₂ change the substance rather than simply balance the equation?`,
+      'distance and displacement': `# Distance and Displacement\n\n**Distance** is the total length of the path travelled. **Displacement** is the straight-line change from the starting position to the finishing position, with direction.\n\nExample: walk 3 m east, then 3 m west. Distance = 3 + 3 = 6 m. Final position is where you started, so displacement = 0 m.\n\nDistance is a scalar (size only); displacement is a vector (size and direction). Distance is never negative, but displacement can be positive, negative, or zero depending on the chosen direction.\n\n**Check yourself:** Can displacement's magnitude ever be greater than distance? Explain why.`,
+      'earth as a planet': `# Earth as a Planet\n\nEarth is the third planet from the Sun and the only planet currently known to support life. It has liquid water at the surface, a protective atmosphere, and a suitable range of conditions for many living things.\n\nEarth is nearly spherical but slightly flattened at the poles and wider around the equator. It rotates on its axis, giving day and night, and revolves around the Sun, producing a year. Earth's axis is tilted, which is a key reason for the seasons.\n\n## Key terms\n- **Axis:** an imaginary line through the poles around which Earth rotates.\n- **Orbit:** the path followed by Earth around the Sun.\n- **Equator:** imaginary great circle halfway between the poles.\n\n**Check yourself:** Which movement of Earth causes the cycle of day and night?`
+    };
 
-/* ---------- init ---------- */
-function init(){
- EMPTY_HTML=$('lessonBody').innerHTML;
- $('chapterCount').textContent=totalChapters();$('heroChapterCount').textContent=totalChapters();
- $('subjectSelect').innerHTML=DB.map(s=>`<option value="${s.id}">${s.icon} ${esc(s.name)}</option>`).join('');
- // restore preferences
- const m=rawGet(STORAGE_MODEL);if(m&&MODELS[m])selectedModel=m;
- const lg=rawGet(LS_LANG);if(lg&&LANG_RULES[lg])selectedLang=lg;
- const sel=lsGet(LS_SEL,null);if(sel&&DB.some(s=>s.id===sel.subject))selectedSubject=sel.subject;
- $('modelSelect').value=selectedModel;updateModelHint();
- document.querySelectorAll('input[name=lang]').forEach(r=>{r.checked=r.value===selectedLang});
- $('subjectSelect').value=selectedSubject;
- renderSubjectList();fillChapters();renderSubtopics();renderChapterGrid();updateSavedCount();renderResume();
- if(sel&&sel.chapter!==''&&sel.chapter!=null&&currentSubject().chapters[Number(sel.chapter)]){$('chapterSelect').value=String(sel.chapter);$('topicInput').value=currentSubject().chapters[Number(sel.chapter)][0]}
- $('subjectSelect').addEventListener('change',e=>{selectedSubject=e.target.value;$('chapterFilter').value='';renderSubjectList();fillChapters();renderSubtopics();renderChapterGrid();saveSelection()});
- $('modelSelect').addEventListener('change',e=>{selectedModel=MODELS[e.target.value]?e.target.value:'sol';rawSet(STORAGE_MODEL,selectedModel);updateModelHint()});
- document.querySelectorAll('input[name=lang]').forEach(r=>r.addEventListener('change',()=>{if(r.checked){selectedLang=r.value;rawSet(LS_LANG,selectedLang)}}));
- $('chapterSelect').addEventListener('change',()=>{const ch=selectedChapter();if(ch)$('topicInput').value=ch.title;saveSelection()});
- $('subjectFilter').addEventListener('input',renderSubjectList);
- $('chapterFilter').addEventListener('input',renderChapterGrid);
- $('topicInput').addEventListener('keydown',e=>{if(e.key==='Enter')teach('explain')});
- $('explainBtn').addEventListener('click',()=>teach('explain'));
- document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>teach(b.dataset.mode)));
- // toggle chips: state is derived from the text box, so chips can never stack
- document.querySelectorAll('[data-topic]').forEach(b=>b.addEventListener('click',()=>{const t=b.dataset.topic;let p=extraParts();p=p.includes(t)?p.filter(x=>x!==t):[...p,t];$('extraInput').value=p.join('; ');syncChips()}));
- $('extraInput').addEventListener('input',syncChips);
- $('libraryTop').addEventListener('click',showLibrary);$('backToStudy').addEventListener('click',showStudy);
- $('toggleIndex').addEventListener('click',()=>{const el=$('indexContent'), hide=!el.classList.contains('hidden');el.classList.toggle('hidden',hide);$('toggleIndex').textContent=hide?'Show index':'Hide index'});
- $('saveLessonBtn').addEventListener('click',toggleSave);$('copyLessonBtn').addEventListener('click',copyCurrent);
- $('printLessonBtn').addEventListener('click',()=>window.print());$('newLessonBtn').addEventListener('click',newLesson);
- $('gradeBtn').addEventListener('click',gradeQuiz);
- document.querySelectorAll('[data-refine]').forEach(b=>b.addEventListener('click',()=>refineLesson(b.dataset.refine,b.dataset.force==='1')));
- if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-}
+    const $ = id => document.getElementById(id);
+    const DAY = 86400000, TOAST_MS = 3200, AI_TIMEOUT = 180000, SOL_TIMEOUT = 240000, WIKI_TIMEOUT = 5000;
+    const STORAGE = 'studynest_lessons_v1', STORAGE_MODEL = 'studynest_preferred_model', LS_LANG = 'studynest_language_v1', LS_SEL = 'studynest_selection_v1', LS_PROG = 'studynest_progress_v1', LS_CACHE = 'studynest_cache_v1';
+    const MODELS = {
+      deepseek: { name: 'DeepSeek V4.1 Flash', id: 'deepseek/deepseek-v4.1-flash', note: 'Everyday use (Recommended)', costLabel: 'Normal', costValue: '~3.84 credits / 1K tokens', timeout: 180000 },
+      nano: { name: 'GPT 5.4 Nano', id: 'openai/gpt-5.4-nano', note: 'Quick & simple answers', costLabel: 'Low', costValue: '~4.00 credits / 1K tokens', timeout: 120000 },
+      sol: { name: 'GPT 6.1 Sol', id: 'openai/gpt-6.1-sol', note: 'Advanced reasoning', costLabel: 'High', costValue: '~32.00 credits / 1K tokens', timeout: SOL_TIMEOUT },
+      astra: { name: 'GPT 6 Astra', id: 'openai/gpt-6-astra', note: 'Complex problems & advanced reasoning', costLabel: 'Very High', costValue: '~160.35 credits / 1K tokens', timeout: 300000 }
+    };
+    const LANG_RULES = {
+      english: 'LANGUAGE: Write in clear, simple English.',
+      hinglish: 'LANGUAGE: Write in simple Hinglish: Hindi written in Roman letters mixed naturally with English, the way a friendly Indian teacher talks in class. Keep scientific/technical terms, formulas and headings in English.',
+      hindi: 'LANGUAGE: Write in simple Hindi using Devanagari script. Keep scientific/technical terms in English in brackets the first time they appear, and keep formulas unchanged.'
+    };
+    const MODE_LABEL = { explain: 'Explanation', notes: 'Detailed notes', quiz: 'Quiz', flashcards: 'Flashcards' };
+    let selectedSubject = 'bio', selectedModel = 'deepseek', selectedLang = 'english', currentLesson = null, currentRefs = [], busy = false, grading = false, EMPTY_HTML = '';
 
-/* ---------- sidebar, chapters, chips ---------- */
-function studiedSet(id){return new Set(lsGet(LS_PROG,{})[id]||[])}
-function markStudied(id,i){const p=lsGet(LS_PROG,{});const s=new Set(p[id]||[]);if(s.has(i))return;s.add(i);p[id]=[...s].sort((a,b)=>a-b);lsSet(LS_PROG,p);renderSubjectList();renderChapterGrid()}
-function renderSubjectList(){const q=$('subjectFilter').value.trim().toLowerCase();$('subjectList').innerHTML=DB.filter(s=>s.name.toLowerCase().includes(q)).map(s=>{const n=studiedSet(s.id).size;return `<button class="subject-button ${s.id===selectedSubject?'active':''}" data-subject="${s.id}"><span class="subject-icon">${s.icon}</span><span class="subject-name">${esc(s.name)}</span><span class="subject-count" title="${n} of ${s.chapters.length} chapters studied">${n}/${s.chapters.length}</span></button>`}).join('');document.querySelectorAll('[data-subject]').forEach(b=>b.addEventListener('click',()=>{selectedSubject=b.dataset.subject;$('subjectSelect').value=selectedSubject;$('chapterFilter').value='';renderSubjectList();fillChapters();renderSubtopics();renderChapterGrid();saveSelection()}))}
-function fillChapters(){const s=currentSubject();$('chapterSelect').innerHTML='<option value="">Choose a chapter (optional)</option>'+s.chapters.map((c,i)=>`<option value="${i}">${esc(c[0])} (p. ${c[1]})</option>`).join('');}
-function selectedChapter(){const i=$('chapterSelect').value;if(i==='')return null;const c=currentSubject().chapters[Number(i)];return c?{title:c[0],page:c[1],index:Number(i)}:null}
-function renderSubtopics(){const list=SUBTOPICS[selectedSubject]||[];$('subtopicWrap').classList.toggle('hidden',!list.length);$('subtopicChips').innerHTML=list.map(t=>`<button type="button" class="suggestion subtopic" data-subtopic="${esc(t)}">${esc(t)}</button>`).join('');document.querySelectorAll('[data-subtopic]').forEach(b=>b.addEventListener('click',()=>{$('chapterSelect').value='';$('topicInput').value=b.dataset.subtopic;saveSelection();$('topicInput').focus()}))}
-function renderChapterGrid(){const s=currentSubject(),q=$('chapterFilter').value.trim().toLowerCase(),done=studiedSet(s.id);$('indexTitle').textContent=`${s.name}: chapter index`;const items=s.chapters.map((c,i)=>({c,i})).filter(({c})=>!q||c[0].toLowerCase().includes(q));$('chapterGrid').innerHTML=items.length?items.map(({c,i})=>`<button class="chapter-card ${done.has(i)?'studied':''}" data-chapter-index="${i}"><span class="chapter-num">${done.has(i)?'✓':String(i+1).padStart(2,'0')}</span><span><strong>${esc(c[0])}</strong><small>Page ${esc(c[1])} · ${done.has(i)?'<span class="studied-mark">Studied</span> · ':''}Tap to learn</small></span></button>`).join(''):'<p class="muted" style="font-size:12px;grid-column:1/-1">No chapters match your search.</p>';document.querySelectorAll('[data-chapter-index]').forEach(b=>b.addEventListener('click',()=>{const i=Number(b.dataset.chapterIndex);$('chapterSelect').value=String(i);$('topicInput').value=s.chapters[i][0];saveSelection();$('teachPanel').scrollIntoView({behavior:'smooth',block:'start'});$('topicInput').focus()}))}
-function extraParts(){return $('extraInput').value.split(';').map(x=>x.trim()).filter(Boolean)}
-function syncChips(){const p=extraParts();document.querySelectorAll('[data-topic]').forEach(b=>{const on=p.includes(b.dataset.topic);b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false')})}
+    /* ---------- storage helpers ---------- */
+    function lsGet(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v) } catch { return d } }
+    function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true } catch { return false } }
+    function rawGet(k) { try { return localStorage.getItem(k) } catch { return null } }
+    function rawSet(k, v) { try { localStorage.setItem(k, v) } catch { } }
+    function getSaved() { return lsGet(STORAGE, []) }
+    function setSaved(a) { if (!lsSet(STORAGE, a)) showToast('Could not save: this browser blocked storage.'); updateSavedCount(); renderResume() }
+    /* ---------- account sync: saved lessons follow the signed-in account (Netlify DB via /api/lessons) ----------
+       Not signed in = browser-only, exactly as before. Signed in = this device's list is merged with the account's list. */
+    const LS_SYNCED = 'studynest_synced_user_v1', LS_PENDING = 'studynest_pending_delete_v1', LESSONS_API = '/api/lessons', META_KEYS = ['subjectId', 'chapter', 'baseExtra', 'refine', 'lang', 'stage', 'reviewAt'];
+    let signedIn = false, syncing = null;
+    function lessonToServer(x) { const meta = {}; META_KEYS.forEach(k => { if (x[k] !== undefined) meta[k] = x[k] }); return { id: x.id, subject: x.subject, topic: x.topic, mode: x.mode, text: x.text, offline: !!x.offline, created: x.created, model: x.model || '', fallback: !!x.fallback, requested: x.requested || '', meta } }
+    function lessonsApi(method, qs, body) { return fetch(LESSONS_API + (qs || ''), { method, credentials: 'same-origin', headers: body ? { 'Content-Type': 'application/json' } : undefined, body: body ? JSON.stringify(body) : undefined }) }
+    async function pushLesson(x) {
+      if (!signedIn || !x) return; try {
+        const r = await lessonsApi('POST', '', lessonToServer(x)); if (r.status === 401) { signedIn = false; return }
+        if (r.ok) { const j = await r.json(); if (j.lesson && j.lesson.id !== x.id) { const a = getSaved(), m = a.find(y => y.id === x.id); if (m) { m.id = j.lesson.id; lsSet(STORAGE, a) } } }
+      } catch { }
+    }
+    function queueDelete(id) { const p = lsGet(LS_PENDING, []); if (!p.includes(id)) { p.push(id); lsSet(LS_PENDING, p) } }
+    function unqueueDelete(id) { lsSet(LS_PENDING, lsGet(LS_PENDING, []).filter(i => i !== id)) }
+    // A delete the server did not confirm is queued and retried on the next sync, so it can never "come back".
+    // When signed out, only queue if this device was previously synced to an account (e.g. the session expired);
+    // a device that never synced has nothing on the server to delete.
+    async function deleteRemote(id) {
+      if (!id) return; if (!signedIn) { if (rawGet(LS_SYNCED)) queueDelete(id); return }
+      try { const r = await lessonsApi('DELETE', '?id=' + encodeURIComponent(id)); if (!r.ok) { if (r.status === 401) signedIn = false; queueDelete(id) } } catch { queueDelete(id) }
+    }
+    async function clearRemote() {
+      if (!signedIn) { if (rawGet(LS_SYNCED)) queueDelete('*'); return }
+      try { const r = await lessonsApi('DELETE', '?all=true'); if (!r.ok) { if (r.status === 401) signedIn = false; queueDelete('*') } } catch { queueDelete('*') }
+    }
+    function syncFromServer() {
+      if (syncing) return syncing;
+      syncing = (async () => {
+        try {
+          let pend = lsGet(LS_PENDING, []);
+          if (pend.length) { const left = []; for (const id of pend) { try { const r = await lessonsApi('DELETE', id === '*' ? '?all=true' : '?id=' + encodeURIComponent(id)); if (!r.ok) left.push(id) } catch { left.push(id) } } lsSet(LS_PENDING, left); pend = left }
+          const res = await lessonsApi('GET');
+          if (res.status === 401) { signedIn = false; return }
+          if (!res.ok) return;
+          const data = await res.json(); signedIn = true;
+          const server = pend.includes('*') ? [] : (data.lessons || []).filter(x => !pend.includes(x.id));
+          const merged = server.slice(), toPush = [];
+          getSaved().forEach(l => {
+            const i = merged.findIndex(x => sameLesson(x, l));
+            if (i < 0) { merged.push(l); toPush.push(l) }
+            else if ((l.created || 0) > (merged[i].created || 0)) { const m = { ...l, id: merged[i].id }; merged[i] = m; toPush.push(m) }
+          });
+          merged.sort((a, b) => (b.created || 0) - (a.created || 0));
+          setSaved(merged.slice(0, 120));
+          if (!$('libraryPanel').classList.contains('hidden')) renderLibrary();
+          for (const l of toPush) await pushLesson(l);
+        } catch { } finally { syncing = null }
+      })(); return syncing
+    }
+    window.addEventListener('studynest-auth', e => {
+      const d = e.detail || {};
+      if (d.type === 'logout') { signedIn = false; if (rawGet(LS_SYNCED)) { rawSet(LS_SYNCED, ''); lsSet(LS_PENDING, []); setSaved([]); if (!$('libraryPanel').classList.contains('hidden')) renderLibrary() } return }
+      if (!d.userId) { signedIn = false; return }
+      signedIn = true;
+      if (d.type === 'init' || d.type === 'login') { const prev = rawGet(LS_SYNCED); if (prev && prev !== d.userId) { lsSet(LS_PENDING, []); setSaved([]) } rawSet(LS_SYNCED, d.userId); syncFromServer() }
+    });
+    function totalChapters() { return DB.reduce((n, s) => n + s.chapters.length, 0) }
+    function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])) }
+    let toastTimer = null;
+    function showToast(s) { const t = $('toast'); t.textContent = s; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), TOAST_MS) }
+    function currentSubject() { return DB.find(s => s.id === selectedSubject) || DB[0] }
+    function getModelConfig(k) { return MODELS[k] || MODELS.deepseek }
+    const COST_TIERS = {
+      Low: { bg: '#e8f7ef', fg: '#17683f', bd: '#bfe7d0', dot: '#2fb16b' },
+      Normal: { bg: '#eaf2fd', fg: '#1f4f93', bd: '#c6dbf6', dot: '#3b82d6' },
+      High: { bg: '#fff3e3', fg: '#955012', bd: '#fad8aa', dot: '#f08a24' },
+      'Very High': { bg: '#fdecec', fg: '#9b1c1c', bd: '#f6c9c9', dot: '#dc3b3b' }
+    };
+    function updateModelHint() {
+      const m = getModelConfig(selectedModel);
+      $('modelHint').textContent = m.name + ' · ' + m.note;
+      const t = COST_TIERS[m.costLabel] || COST_TIERS.Normal;
+      $('modelCostInfo').innerHTML = '<span>Puter Cost:</span><span style="display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;font-weight:800;background:' + t.bg + ';color:' + t.fg + ';border:1px solid ' + t.bd + '"><span aria-hidden="true" style="width:7px;height:7px;border-radius:50%;background:' + t.dot + '"></span><strong>' + m.costLabel + '</strong></span><span>(' + m.costValue + ')</span>';
+      const w = $('astraWarning');
+      if (selectedModel === 'astra') { w.textContent = '⚠️ Warning: This model is very expensive and may consume a significant amount of Puter credits on your account.'; w.classList.remove('hidden') }
+      else { w.classList.add('hidden') }
+    }
+    function saveSelection() { lsSet(LS_SEL, { subject: selectedSubject, chapter: $('chapterSelect').value }) }
 
-/* ---------- prompts ---------- */
-const MATH_RULE='MATHS FORMAT: Write every formula, fraction, exponent, root and logarithm in LaTeX, using $...$ for inline maths and $$...$$ for a displayed equation (for example $\\frac{a}{b}$, $x^2$, $\\sqrt{2}$, $\\log_{10} 100$). Never write maths as plain text like sqrt(2) or x^2. Write money as "Rs." and never use the $ sign for currency.';
-const DIAGRAM_RULE='DIAGRAMS: If a simple labelled diagram would clearly help (for example parts of a flower or cell, a ray diagram, a circuit, a geometry figure, contour lines), include ONE diagram as inline SVG inside a fenced code block whose language is svg. Start with <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">, use only basic shapes (line, rect, circle, ellipse, polygon, polyline, path, text), put labels in <text> at font-size 12 to 14, and use no scripts, images, links or styles. Skip the diagram if it would not genuinely help.';
-function composePrompt(mode,subject,topic,chapter,extra,refs,lang){let action={explain:'Teach me the topic',notes:'Create comprehensive revision notes',quiz:'Create a challenging but fair quiz',flashcards:'Create useful flashcards'}[mode]||'Teach me the topic';let modeRules={explain:'Use a patient teacher style. Begin with the simplest explanation, then build up. Include definitions, a real-life analogy, examples, important terms, mistakes to avoid, an exam-focused section, three takeaways, and one easy comprehension question.',notes:'Create thorough, well-organised Class 9 revision notes. Include core concepts, definitions, classifications, formulas or dates where relevant, examples, common mistakes, likely exam questions, and a quick final summary. Do not invent exact wording from any textbook.',quiz:'Make 10 questions from this topic, suitable for a serious ICSE Class 9 student. Mix direct understanding, reasoning, application, and calculations where relevant. Use MCQs where suitable, with the options A to D each on its own line. Number the questions 1 to 10. Do NOT show answers or explanations. Finish by telling me to type my answers (for example "1-B, 2-D, 3-A" or short written answers) into the answer box under the quiz so they can be checked.',flashcards:'Create 12 concise flashcards in a numbered list. Each card must have a clear question followed by a short answer. Cover definitions, key facts, application, and common confusions.'}[mode];let context=refs&&refs.length?refs.map((r,i)=>`${i+1}. ${r.title}: ${r.extract}`).join('\n'):'No web excerpts were available for this request.';return `You are a warm, patient, highly accurate ICSE Class 9 (India) teacher. Explain in simple language appropriate for a young teenager. Do not overwhelm the learner with jargon; explain every difficult word when first used. Use clear headings, concise paragraphs, bullets, examples, and correct formulas/units. Do not pretend you saw textbook pages that were not supplied.\n\nTASK: ${action}.\nSUBJECT: ${subject}\nCHAPTER FROM THE USER'S CONTENTS INDEX: ${chapter||'Not specified'}\nTOPIC / QUESTION: ${topic}\nLEARNER REQUEST: ${extra||'No extra preference.'}\n\nSTYLE RULES: ${modeRules}\n${LANG_RULES[lang]||LANG_RULES.english}\n${MATH_RULE}\n${mode==='quiz'?'':DIAGRAM_RULE+'\n'}\nSOURCE NOTE: A chapter title/page index was transcribed from the user's contents-page PDF; that file did not contain full chapter text. The following, if present, are public web reference snippets, not the user's textbook. Clearly avoid textbook-specific claims that are not supported.\n\nPUBLIC WEB REFERENCE SNIPPETS:\n${context}\n\nIf sources disagree or are incomplete, say what is uncertain instead of guessing. For law/history/science, keep claims age-appropriate and distinguish established facts from simplifications. Reply in the most useful format for the requested task.`}
-function composeGradePrompt(quiz,answers,lang){return `You are a kind, accurate ICSE Class 9 (India) teacher marking a student's quiz.\n\nQUIZ:\n${quiz}\n\nSTUDENT'S ANSWERS:\n${answers}\n\nFor every question in order: say Correct, Partly correct or Incorrect; give the right answer; and if the student was wrong or partly right, explain the mistake in one or two simple sentences. Treat a missing answer as incorrect. Then give the total score out of the number of questions and two specific things to revise. Be encouraging and concise.\n${LANG_RULES[lang]||LANG_RULES.english}\n${MATH_RULE}`}
+    /* ---------- init ---------- */
+    function init() {
+      EMPTY_HTML = $('lessonBody').innerHTML;
+      $('chapterCount').textContent = totalChapters(); $('heroChapterCount').textContent = totalChapters();
+      $('subjectSelect').innerHTML = DB.map(s => `<option value="${s.id}">${s.icon} ${esc(s.name)}</option>`).join('');
+      // restore preferences
+      const m = rawGet(STORAGE_MODEL); if (m && MODELS[m]) selectedModel = m;
+      const lg = rawGet(LS_LANG); if (lg && LANG_RULES[lg]) selectedLang = lg;
+      const sel = lsGet(LS_SEL, null); if (sel && DB.some(s => s.id === sel.subject)) selectedSubject = sel.subject;
+      $('modelSelect').value = selectedModel; updateModelHint();
+      document.querySelectorAll('input[name=lang]').forEach(r => { r.checked = r.value === selectedLang });
+      $('subjectSelect').value = selectedSubject;
+      renderSubjectList(); fillChapters(); renderSubtopics(); renderChapterGrid(); updateSavedCount(); renderResume();
+      if (sel && sel.chapter !== '' && sel.chapter != null && currentSubject().chapters[Number(sel.chapter)]) { $('chapterSelect').value = String(sel.chapter); $('topicInput').value = currentSubject().chapters[Number(sel.chapter)][0] }
+      $('subjectSelect').addEventListener('change', e => { selectedSubject = e.target.value; $('chapterFilter').value = ''; renderSubjectList(); fillChapters(); renderSubtopics(); renderChapterGrid(); saveSelection() });
+      $('modelSelect').addEventListener('change', e => { selectedModel = MODELS[e.target.value] ? e.target.value : 'deepseek'; rawSet(STORAGE_MODEL, selectedModel); updateModelHint() });
+      document.querySelectorAll('input[name=lang]').forEach(r => r.addEventListener('change', () => { if (r.checked) { selectedLang = r.value; rawSet(LS_LANG, selectedLang) } }));
+      $('chapterSelect').addEventListener('change', () => { const ch = selectedChapter(); if (ch) $('topicInput').value = ch.title; saveSelection() });
+      $('subjectFilter').addEventListener('input', renderSubjectList);
+      $('chapterFilter').addEventListener('input', renderChapterGrid);
+      $('topicInput').addEventListener('keydown', e => { if (e.key === 'Enter') teach('explain') });
+      $('explainBtn').addEventListener('click', () => teach('explain'));
+      document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => teach(b.dataset.mode)));
+      // toggle chips: state is derived from the text box, so chips can never stack
+      document.querySelectorAll('[data-topic]').forEach(b => b.addEventListener('click', () => { const t = b.dataset.topic; let p = extraParts(); p = p.includes(t) ? p.filter(x => x !== t) : [...p, t]; $('extraInput').value = p.join('; '); syncChips() }));
+      $('extraInput').addEventListener('input', syncChips);
+      $('libraryTop').addEventListener('click', showLibrary); $('backToStudy').addEventListener('click', showStudy);
+      $('toggleIndex').addEventListener('click', () => { const el = $('indexContent'), hide = !el.classList.contains('hidden'); el.classList.toggle('hidden', hide); $('toggleIndex').textContent = hide ? 'Show index' : 'Hide index' });
+      $('saveLessonBtn').addEventListener('click', toggleSave); $('copyLessonBtn').addEventListener('click', copyCurrent);
+      $('printLessonBtn').addEventListener('click', () => window.print()); $('newLessonBtn').addEventListener('click', newLesson);
+      $('gradeBtn').addEventListener('click', gradeQuiz);
+      document.querySelectorAll('[data-refine]').forEach(b => b.addEventListener('click', () => refineLesson(b.dataset.refine, b.dataset.force === '1')));
+      if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => { }));
+    }
 
-/* ---------- AI + Wikipedia ---------- */
-async function getWikipedia(query){const url='https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch='+encodeURIComponent(query)+'&gsrnamespace=0&gsrlimit=4&prop=extracts|info&exintro=1&explaintext=1&inprop=url&format=json&origin=*';try{const r=await fetch(url,{signal:AbortSignal.timeout(WIKI_TIMEOUT)});if(!r.ok)throw new Error('Search unavailable');const data=await r.json();return Object.values(data.query?.pages||{}).map(p=>({title:p.title,extract:(p.extract||'').slice(0,1300),url:p.fullurl||`https://en.wikipedia.org/wiki/${encodeURIComponent(p.title.replaceAll(' ','_'))}`})).filter(p=>p.extract)}catch(e){return []}}
-function extractResponse(resp){if(typeof resp==='string')return resp;if(resp?.message?.content){const c=resp.message.content;if(typeof c==='string')return c;if(Array.isArray(c))return c.map(x=>x.text||'').join('\n')}if(resp?.text)return resp.text;if(resp?.content)return typeof resp.content==='string'?resp.content:JSON.stringify(resp.content);return String(resp??'No response returned.')}
-function withTimeout(p,ms){let t;return Promise.race([Promise.resolve(p),new Promise((_,rej)=>{t=setTimeout(()=>{const e=new Error('The AI took too long to respond.');e.kind='timeout';e.ms=ms;rej(e)},ms)})]).finally(()=>clearTimeout(t))}
-const delay=(ms,v)=>new Promise(r=>setTimeout(()=>r(v),ms));
-async function waitForPuter(){for(let i=0;i<80;i++){if(window.puter&&window.puter.ai&&typeof window.puter.ai.chat==='function')return;await delay(100)}const e=new Error('The AI library did not load.');e.kind='lib';throw e}
-function errText(e){if(!e)return'';if(typeof e==='string')return e;const m=e.error?.message||e.message||e.error;if(typeof m==='string')return m;try{return JSON.stringify(e).slice(0,300)}catch{return String(e)}}
-function classifyError(e){if(e&&e.kind)return e.kind;let raw;try{raw=typeof e==='object'?JSON.stringify([e?.code,e?.error?.code,e?.status,errText(e)]):String(e)}catch{raw=String(e)}const t=raw.toLowerCase();
- if(navigator.onLine===false||/failed to fetch|networkerror|network error|load failed|err_internet/.test(t))return'network';
- if(/\b(401|403)\b|unauthori|forbidden|not.?logged|sign.?in|log.?in|\bauth|invalid token|token expired/.test(t))return'auth';
- if(/\b429\b|quota|rate.?limit|insufficient|credit|usage limit|too many|funds/.test(t))return'quota';
- if(/model/.test(t)&&/(not found|unavailable|not supported|unknown|invalid|no such|does not exist|deprecated|access)/.test(t))return'model';
- return'unknown'}
-function errorCopy(kind,e){const m=getModelConfig(selectedModel).name;return({
- auth:['Please sign in to Puter','The AI service needs you to sign in. Allow the Puter pop-up (or sign in at puter.com) and try again.'],
- quota:['AI usage limit reached','The AI service has hit a usage limit for now. Try again in a little while, or switch to GPT 5.4 Nano.'],
- model:['Model unavailable',`${m} isn't available right now. Pick another model and try again.`],
- network:['No connection',"Can't reach the AI service. Check your internet connection and try again."],
- timeout:['That took too long',`The AI didn't answer in time (${Math.round((e?.ms||AI_TIMEOUT)/1000)} seconds). Try again, or choose GPT 5.4 Nano for faster answers.`],
- lib:['AI library did not load','The AI library could not load. Check your connection, turn off any ad-blocker for this site, and reload the page.']
-})[kind]||['Something went wrong',errText(e)||'The AI service returned an error. Please try again.']}
-// Tries the chosen model; only a model-type/unknown failure falls back to Puter's default model.
-async function aiChat(prompt){await waitForPuter();const m=getModelConfig(selectedModel);
- try{const r=await withTimeout(puter.ai.chat(prompt,{model:m.id}),m.timeout||AI_TIMEOUT);return{text:cleanAnswer(r),model:m.name,fallback:false}}
- catch(e){const kind=classifyError(e);if(kind!=='model'&&kind!=='unknown')throw e;
-  console.warn('Model failed, retrying with the default model:',m.id,e);
-  const r=await withTimeout(puter.ai.chat(prompt),AI_TIMEOUT);const dn=(r&&typeof r==='object'&&(r.model||r.message?.model))||"Puter's default model";return{text:cleanAnswer(r),model:String(dn),fallback:true,requested:m.name}}}
-function cleanAnswer(r){const a=extractResponse(r);if(!a||a==='[object Object]'){const e=new Error('The AI service returned an empty response. Please try again.');e.kind='unknown';throw e}return a}
+    /* ---------- sidebar, chapters, chips ---------- */
+    function studiedSet(id) { return new Set(lsGet(LS_PROG, {})[id] || []) }
+    function markStudied(id, i) { const p = lsGet(LS_PROG, {}); const s = new Set(p[id] || []); if (s.has(i)) return; s.add(i); p[id] = [...s].sort((a, b) => a - b); lsSet(LS_PROG, p); renderSubjectList(); renderChapterGrid() }
+    function renderSubjectList() { const q = $('subjectFilter').value.trim().toLowerCase(); $('subjectList').innerHTML = DB.filter(s => s.name.toLowerCase().includes(q)).map(s => { const n = studiedSet(s.id).size; return `<button class="subject-button ${s.id === selectedSubject ? 'active' : ''}" data-subject="${s.id}"><span class="subject-icon">${s.icon}</span><span class="subject-name">${esc(s.name)}</span><span class="subject-count" title="${n} of ${s.chapters.length} chapters studied">${n}/${s.chapters.length}</span></button>` }).join(''); document.querySelectorAll('[data-subject]').forEach(b => b.addEventListener('click', () => { selectedSubject = b.dataset.subject; $('subjectSelect').value = selectedSubject; $('chapterFilter').value = ''; renderSubjectList(); fillChapters(); renderSubtopics(); renderChapterGrid(); saveSelection() })) }
+    function fillChapters() { const s = currentSubject(); $('chapterSelect').innerHTML = '<option value="">Choose a chapter (optional)</option>' + s.chapters.map((c, i) => `<option value="${i}">${esc(c[0])} (p. ${c[1]})</option>`).join(''); }
+    function selectedChapter() { const i = $('chapterSelect').value; if (i === '') return null; const c = currentSubject().chapters[Number(i)]; return c ? { title: c[0], page: c[1], index: Number(i) } : null }
+    function renderSubtopics() { const list = SUBTOPICS[selectedSubject] || []; $('subtopicWrap').classList.toggle('hidden', !list.length); $('subtopicChips').innerHTML = list.map(t => `<button type="button" class="suggestion subtopic" data-subtopic="${esc(t)}">${esc(t)}</button>`).join(''); document.querySelectorAll('[data-subtopic]').forEach(b => b.addEventListener('click', () => { $('chapterSelect').value = ''; $('topicInput').value = b.dataset.subtopic; saveSelection(); $('topicInput').focus() })) }
+    function renderChapterGrid() { const s = currentSubject(), q = $('chapterFilter').value.trim().toLowerCase(), done = studiedSet(s.id); $('indexTitle').textContent = `${s.name}: chapter index`; const items = s.chapters.map((c, i) => ({ c, i })).filter(({ c }) => !q || c[0].toLowerCase().includes(q)); $('chapterGrid').innerHTML = items.length ? items.map(({ c, i }) => `<button class="chapter-card ${done.has(i) ? 'studied' : ''}" data-chapter-index="${i}"><span class="chapter-num">${done.has(i) ? '✓' : String(i + 1).padStart(2, '0')}</span><span><strong>${esc(c[0])}</strong><small>Page ${esc(c[1])} · ${done.has(i) ? '<span class="studied-mark">Studied</span> · ' : ''}Tap to learn</small></span></button>`).join('') : '<p class="muted" style="font-size:12px;grid-column:1/-1">No chapters match your search.</p>'; document.querySelectorAll('[data-chapter-index]').forEach(b => b.addEventListener('click', () => { const i = Number(b.dataset.chapterIndex); $('chapterSelect').value = String(i); $('topicInput').value = s.chapters[i][0]; saveSelection(); $('teachPanel').scrollIntoView({ behavior: 'smooth', block: 'start' }); $('topicInput').focus() })) }
+    function extraParts() { return $('extraInput').value.split(';').map(x => x.trim()).filter(Boolean) }
+    function syncChips() { const p = extraParts(); document.querySelectorAll('[data-topic]').forEach(b => { const on = p.includes(b.dataset.topic); b.classList.toggle('active', on); b.setAttribute('aria-pressed', on ? 'true' : 'false') }) }
 
-/* ---------- cache ---------- */
-function cacheGet(k){return (lsGet(LS_CACHE,{}))[k]||null}
-function cacheSet(k,v){const c=lsGet(LS_CACHE,{});c[k]=v;const ks=Object.keys(c);if(ks.length>40)ks.sort((a,b)=>(c[a].t||0)-(c[b].t||0)).slice(0,ks.length-40).forEach(x=>delete c[x]);if(!lsSet(LS_CACHE,c))lsSet(LS_CACHE,{[k]:v})}
+    /* ---------- prompts ---------- */
+    const MATH_RULE = 'MATHS FORMAT: Write every formula, fraction, exponent, root and logarithm in LaTeX, using $...$ for inline maths and $$...$$ for a displayed equation (for example $\\frac{a}{b}$, $x^2$, $\\sqrt{2}$, $\\log_{10} 100$). Never write maths as plain text like sqrt(2) or x^2. Write money as "Rs." and never use the $ sign for currency.';
+    const DIAGRAM_RULE = 'DIAGRAMS: If a simple labelled diagram would clearly help (for example parts of a flower or cell, a ray diagram, a circuit, a geometry figure, contour lines), include ONE diagram as inline SVG inside a fenced code block whose language is svg. Start with <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">, use only basic shapes (line, rect, circle, ellipse, polygon, polyline, path, text), put labels in <text> at font-size 12 to 14, and use no scripts, images, links or styles. Skip the diagram if it would not genuinely help.';
+    function composePrompt(mode, subject, topic, chapter, extra, refs, lang) { let action = { explain: 'Teach me the topic', notes: 'Create comprehensive revision notes', quiz: 'Create a challenging but fair quiz', flashcards: 'Create useful flashcards' }[mode] || 'Teach me the topic'; let modeRules = { explain: 'Use a patient teacher style. Begin with the simplest explanation, then build up. Include definitions, a real-life analogy, examples, important terms, mistakes to avoid, an exam-focused section, three takeaways, and one easy comprehension question.', notes: 'Create thorough, well-organised Class 9 revision notes. Include core concepts, definitions, classifications, formulas or dates where relevant, examples, common mistakes, likely exam questions, and a quick final summary. Do not invent exact wording from any textbook.', quiz: 'Make 10 questions from this topic, suitable for a serious ICSE Class 9 student. Mix direct understanding, reasoning, application, and calculations where relevant. Use MCQs where suitable, with the options A to D each on its own line. You MUST number the questions sequentially from 1 to 10 (1. for the first, 2. for the second, up to 10.). Do NOT show answers or explanations. Finish by telling me to type my answers (for example "1-B, 2-D, 3-A" or short written answers) into the answer box under the quiz so they can be checked.', flashcards: 'Create 12 concise flashcards in a numbered list. Each card must have a clear question followed by a short answer. Cover definitions, key facts, application, and common confusions.' }[mode]; let context = refs && refs.length ? refs.map((r, i) => `${i + 1}. ${r.title}: ${r.extract}`).join('\n') : 'No web excerpts were available for this request.'; return `You are a warm, patient, highly accurate ICSE Class 9 (India) teacher. Explain in simple language appropriate for a young teenager. Do not overwhelm the learner with jargon; explain every difficult word when first used. Use clear headings, concise paragraphs, bullets, examples, and correct formulas/units. Do not pretend you saw textbook pages that were not supplied.\n\nTASK: ${action}.\nSUBJECT: ${subject}\nCHAPTER FROM THE USER'S CONTENTS INDEX: ${chapter || 'Not specified'}\nTOPIC / QUESTION: ${topic}\nLEARNER REQUEST: ${extra || 'No extra preference.'}\n\nSTYLE RULES: ${modeRules}\n${LANG_RULES[lang] || LANG_RULES.english}\n${MATH_RULE}\n${mode === 'quiz' ? '' : DIAGRAM_RULE + '\n'}\nSOURCE NOTE: A chapter title/page index was transcribed from the user's contents-page PDF; that file did not contain full chapter text. The following, if present, are public web reference snippets, not the user's textbook. Clearly avoid textbook-specific claims that are not supported.\n\nPUBLIC WEB REFERENCE SNIPPETS:\n${context}\n\nIf sources disagree or are incomplete, say what is uncertain instead of guessing. For law/history/science, keep claims age-appropriate and distinguish established facts from simplifications. Reply in the most useful format for the requested task.` }
+    function composeGradePrompt(quiz, answers, lang) { return `You are a kind, accurate ICSE Class 9 (India) teacher marking a student's quiz.\n\nQUIZ:\n${quiz}\n\nSTUDENT'S ANSWERS:\n${answers}\n\nFor every question in order: say Correct, Partly correct or Incorrect; give the right answer; and if the student was wrong or partly right, explain the mistake in one or two simple sentences. Treat a missing answer as incorrect. Then give the total score out of the number of questions and two specific things to revise. Be encouraging and concise.\n${LANG_RULES[lang] || LANG_RULES.english}\n${MATH_RULE}` }
 
-/* ---------- markdown, maths, diagrams ---------- */
-const SVG_TAGS=new Set(['svg','g','path','circle','ellipse','rect','line','polyline','polygon','text','tspan','defs','marker','title','desc']);
-const SVG_ATTRS=new Set(['viewbox','x','y','x1','y1','x2','y2','cx','cy','r','rx','ry','d','points','fill','stroke','stroke-width','stroke-dasharray','stroke-linecap','stroke-linejoin','opacity','fill-opacity','stroke-opacity','transform','text-anchor','dominant-baseline','font-size','font-weight','font-style','id','marker-end','marker-start','refx','refy','markerwidth','markerheight','orient','dx','dy','preserveaspectratio','fill-rule','width','height']);
-let svgSeq=0;
-function sanitizeSvg(src){try{if(!src||src.length>30000)return'';const doc=new DOMParser().parseFromString(src,'text/html');const root=doc.body.querySelector('svg');if(!root)return'';const pre='sv'+(++svgSeq)+'-';let count=0;
- const clean=el=>{for(const a of [...el.attributes]){const n=a.name.toLowerCase(),v=a.value;if(!SVG_ATTRS.has(n)||/javascript:|data:|expression\s*\(|[<>]/i.test(v)){el.removeAttribute(a.name);continue}
-   if(/url\(/i.test(v)){const m=v.trim().match(/^url\(#([\w-]+)\)$/);if(!m){el.removeAttribute(a.name)}else el.setAttribute(a.name,`url(#${pre}${m[1]})`);continue}
-   if(n==='id')el.setAttribute('id',pre+v.replace(/[^\w-]/g,''))}};
- const walk=el=>{for(const c of [...el.children]){if(!SVG_TAGS.has(c.localName.toLowerCase())||++count>400){c.remove();continue}clean(c);walk(c)}};
- if(!root.getAttribute('viewBox')){const w=parseFloat(root.getAttribute('width')),h=parseFloat(root.getAttribute('height'));root.setAttribute('viewBox',`0 0 ${w>0?w:400} ${h>0?h:300}`)}
- clean(root);walk(root);root.removeAttribute('width');root.removeAttribute('height');
- const title=(root.querySelector('title')?.textContent||'Diagram').trim().slice(0,120);
- return `<figure class="diagram" role="img" aria-label="${esc(title)}">${root.outerHTML}</figure>`}catch{return''}}
-function mathHtml(m){if(window.katex){try{return katex.renderToString(m.tex,{displayMode:m.display,throwOnError:false,strict:'ignore',trust:false})}catch{}}return `<code>${esc(m.tex)}</code>`}
-function renderMarkdown(md){let codes=[],maths=[];md=String(md||'').replace(/```([\w+-]*)[ \t]*\n?([\s\S]*?)```/g,(_,lang,code)=>{let html='';if(/^\s*<svg[\s>]/i.test(code)&&['','svg','xml','html'].includes(lang.toLowerCase()))html=sanitizeSvg(code);if(!html)html=`<pre><code>${esc(code.trimEnd())}</code></pre>`;codes.push(html);return `%%CODE${codes.length-1}%%`});
- const stash=(tex,display)=>{maths.push({tex,display});return `%%MATH${maths.length-1}%%`};
- md=md.replace(/\\\$/g,'\u0001').replace(/\$\$([\s\S]+?)\$\$/g,(_,t)=>stash(t.trim(),true)).replace(/\\\[([\s\S]+?)\\\]/g,(_,t)=>stash(t.trim(),true)).replace(/\\\(([\s\S]+?)\\\)/g,(_,t)=>stash(t.trim(),false)).replace(/\$(?!\s)([^$\n]*?[^\s$])\$(?!\d)/g,(_,t)=>stash(t,false));
- let lines=esc(md).split('\n'),out='',para=[],list=null;const flushP=()=>{if(para.length){out+='<p>'+para.join('<br>')+'</p>';para=[]}};const closeList=()=>{if(list){out+=`</${list}>`;list=null}};for(let line of lines){let t=line.trim();let codeMatch=t.match(/^%%CODE(\d+)%%$/);if(codeMatch){flushP();closeList();out+=codes[+codeMatch[1]];continue}if(!t){flushP();closeList();continue}let h=t.match(/^(#{1,3})\s+(.*)$/);if(h){flushP();closeList();let n=h[1].length;out+=`<h${n}>${inlineMd(h[2])}</h${n}>`;continue}if(/^---+$/.test(t)){flushP();closeList();out+='<hr>';continue}let li=t.match(/^[-*]\s+(.*)$/);let oi=t.match(/^\d+[.)]\s+(.*)$/);if(li||oi){flushP();let typ=li?'ul':'ol';if(list!==typ){closeList();list=typ;out+=`<${typ}>`}out+=`<li>${inlineMd((li||oi)[1])}</li>`;continue}if(t.startsWith('&gt; ')){flushP();closeList();out+=`<blockquote>${inlineMd(t.slice(5))}</blockquote>`;continue}closeList();para.push(inlineMd(t))}flushP();closeList();
- return out.replace(/%%MATH(\d+)%%/g,(_,i)=>mathHtml(maths[+i])).replace(/%%CODE(\d+)%%/g,(_,i)=>codes[+i]??'').replace(/\u0001/g,'$')}
-function inlineMd(s){return s.replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/\[(.+?)\]\((https?:[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')}
+    /* ---------- AI + Wikipedia ---------- */
+    async function getWikipedia(query) { const url = 'https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=' + encodeURIComponent(query) + '&gsrnamespace=0&gsrlimit=4&prop=extracts|info&exintro=1&explaintext=1&inprop=url&format=json&origin=*'; try { const r = await fetch(url, { signal: AbortSignal.timeout(WIKI_TIMEOUT) }); if (!r.ok) throw new Error('Search unavailable'); const data = await r.json(); return Object.values(data.query?.pages || {}).map(p => ({ title: p.title, extract: (p.extract || '').slice(0, 1300), url: p.fullurl || `https://en.wikipedia.org/wiki/${encodeURIComponent(p.title.replaceAll(' ', '_'))}` })).filter(p => p.extract) } catch (e) { return [] } }
+    function extractResponse(resp) { if (typeof resp === 'string') return resp; if (resp?.message?.content) { const c = resp.message.content; if (typeof c === 'string') return c; if (Array.isArray(c)) return c.map(x => x.text || '').join('\n') } if (resp?.text) return resp.text; if (resp?.content) return typeof resp.content === 'string' ? resp.content : JSON.stringify(resp.content); return String(resp ?? 'No response returned.') }
+    function withTimeout(p, ms) { let t; return Promise.race([Promise.resolve(p), new Promise((_, rej) => { t = setTimeout(() => { const e = new Error('The AI took too long to respond.'); e.kind = 'timeout'; e.ms = ms; rej(e) }, ms) })]).finally(() => clearTimeout(t)) }
+    const delay = (ms, v) => new Promise(r => setTimeout(() => r(v), ms));
+    async function waitForPuter() { for (let i = 0; i < 80; i++) { if (window.puter && window.puter.ai && typeof window.puter.ai.chat === 'function') return; await delay(100) } const e = new Error('The AI library did not load.'); e.kind = 'lib'; throw e }
+    function errText(e) { if (!e) return ''; if (typeof e === 'string') return e; const m = e.error?.message || e.message || e.error; if (typeof m === 'string') return m; try { return JSON.stringify(e).slice(0, 300) } catch { return String(e) } }
+    function classifyError(e) {
+      if (e && e.kind) return e.kind; let raw; try { raw = typeof e === 'object' ? JSON.stringify([e?.code, e?.error?.code, e?.status, errText(e)]) : String(e) } catch { raw = String(e) } const t = raw.toLowerCase();
+      if (navigator.onLine === false || /failed to fetch|networkerror|network error|load failed|err_internet/.test(t)) return 'network';
+      if (/\b(401|403)\b|unauthori|forbidden|not.?logged|sign.?in|log.?in|\bauth|invalid token|token expired/.test(t)) return 'auth';
+      if (/\b429\b|quota|rate.?limit|insufficient|credit|usage limit|too many|funds/.test(t)) return 'quota';
+      if (/model/.test(t) && /(not found|unavailable|not supported|unknown|invalid|no such|does not exist|deprecated|access)/.test(t)) return 'model';
+      return 'unknown'
+    }
+    function errorCopy(kind, e) {
+      const m = getModelConfig(selectedModel).name; return ({
+        auth: ['Please sign in to Puter', 'The AI service needs you to sign in. Allow the Puter pop-up (or sign in at puter.com) and try again.'],
+        quota: ['AI usage limit reached', 'The AI service has hit a usage limit for now. Try again in a little while, or switch to GPT 5.4 Nano.'],
+        model: ['Model unavailable', `${m} isn't available right now. Pick another model and try again.`],
+        network: ['No connection', "Can't reach the AI service. Check your internet connection and try again."],
+        timeout: ['That took too long', `The AI didn't answer in time (${Math.round((e?.ms || AI_TIMEOUT) / 1000)} seconds). Try again, or choose GPT 5.4 Nano for faster answers.`],
+        lib: ['AI library did not load', 'The AI library could not load. Check your connection, turn off any ad-blocker for this site, and reload the page.']
+      })[kind] || ['Something went wrong', errText(e) || 'The AI service returned an error. Please try again.']
+    }
+    // Tries the chosen model; only a model-type/unknown failure falls back to Puter's default model.
+    async function aiChat(prompt) {
+      await waitForPuter(); const m = getModelConfig(selectedModel);
+      try { const r = await withTimeout(puter.ai.chat(prompt, { model: m.id }), m.timeout || AI_TIMEOUT); return { text: cleanAnswer(r), model: m.name, fallback: false } }
+      catch (e) {
+        const kind = classifyError(e); if (kind !== 'model' && kind !== 'unknown') throw e;
+        console.warn('Model failed, retrying with the default model:', m.id, e);
+        const r = await withTimeout(puter.ai.chat(prompt), AI_TIMEOUT); const dn = (r && typeof r === 'object' && (r.model || r.message?.model)) || "Puter's default model"; return { text: cleanAnswer(r), model: String(dn), fallback: true, requested: m.name }
+      }
+    }
+    function cleanAnswer(r) { const a = extractResponse(r); if (!a || a === '[object Object]') { const e = new Error('The AI service returned an empty response. Please try again.'); e.kind = 'unknown'; throw e } return a }
 
-/* ---------- lesson display ---------- */
-function setLoading(mode,subject,topic,modelName){busy=true;$('explainBtn').disabled=true;document.querySelectorAll('[data-mode]').forEach(b=>b.disabled=true);$('lessonKicker').textContent='YOUR TEACHER IS PREPARING';$('lessonTitle').textContent=topic;$('lessonMeta').innerHTML=`<span class="tag">${esc(subject)}</span><span class="tag orange">${mode==='explain'?'Simple explanation':mode==='notes'?'Detailed notes':mode==='quiz'?'Practice quiz':'Flashcards'}</span><span class="tag">${esc(modelName)}</span>`;['lessonActions','referencesWrap','refineRow','quizBox'].forEach(id=>$(id).classList.add('hidden'));$('lessonBody').innerHTML='<div class="loading"><div class="spinner"></div><strong>Putting the ideas into simple language…</strong><p class="muted">Using '+esc(modelName)+' · preparing your lesson.</p></div>'}
-function finishLoading(){busy=false;$('explainBtn').disabled=false;document.querySelectorAll('[data-mode]').forEach(b=>b.disabled=false)}
-function renderRefs(refs){currentRefs=refs||[];if(currentRefs.length){$('referencesWrap').classList.remove('hidden');$('referenceGrid').innerHTML=currentRefs.map(r=>`<a class="reference-card" href="${esc(r.url)}" target="_blank" rel="noopener noreferrer"><strong>${esc(r.title)}</strong><p>${esc(r.extract)}</p><small>Open Wikipedia ↗</small></a>`).join('')}else $('referencesWrap').classList.add('hidden')}
-function showLesson(L,refs,kicker){currentLesson=L;
- $('lessonKicker').textContent=kicker||(L.offline?'BUILT-IN QUICK LESSON':'YOUR PERSONAL LESSON');$('lessonTitle').textContent=L.topic;
- const src=L.offline?'Offline guide':(L.cached?'Cached · ':'')+(L.model||(L.fromSaved?'Saved on this device':'AI-generated'));
- $('lessonMeta').innerHTML=`<span class="tag">${esc(L.subject)}</span><span class="tag orange">${esc(MODE_LABEL[L.mode]||'Lesson')}</span><span class="tag">${esc(src)}</span>${L.lang&&L.lang!=='english'?`<span class="tag">${esc(L.lang==='hindi'?'Hindi':'Hinglish')}</span>`:''}`;
- $('lessonBody').innerHTML=(L.fallback&&L.requested?`<div role="alert" style="background:#fff8db;border:1px solid #f2c744;color:#7a5b00;border-radius:14px;padding:12px 14px;margin:0 0 14px;font-weight:600">⚠️ This model (${esc(L.requested)}) was unavailable so the response was generated by default model (${esc(L.model)}).</div>`:'')+`<article class="prose" lang="${L.lang==='hindi'?'hi':L.lang==='hinglish'?'hi-Latn':'en'}">${renderMarkdown(L.text)}</article>`;
- $('lessonActions').classList.remove('hidden');$('refineRow').classList.remove('hidden');
- const quiz=L.mode==='quiz'&&!L.offline;$('quizBox').classList.toggle('hidden',!quiz);if(quiz){$('quizAnswers').value='';$('quizFeedback').innerHTML='';$('quizFeedback').classList.add('hidden')}
- renderRefs(refs);updateSaveBtn();
- $('lessonPanel').scrollIntoView({behavior:'smooth',block:'start'});$('lessonTitle').focus({preventScroll:true})}
-function showError(topic,kind,err,retry){const [title,msg]=errorCopy(kind,err);currentLesson=null;$('lessonKicker').textContent='A LITTLE TECHNICAL PAUSE';$('lessonTitle').textContent=topic;$('lessonBody').innerHTML=`<div class="callout error-box"><span>🌐</span><div><strong>${esc(title)}</strong>${esc(msg)}<br><br>The chapter index still works.<br><button class="btn btn-primary btn-sm" id="retryBtn" style="margin-top:8px">↻ Try again</button></div></div>`;$('retryBtn').addEventListener('click',retry);$('lessonTitle').focus({preventScroll:true})}
-function findOffline(topic){const q=topic.toLowerCase();const keys=Object.keys(OFFLINE).sort((a,b)=>b.length-a.length);for(const k of keys){const base=k.replace(/s$/,'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&');if(new RegExp('(^|\\W)'+base+'s?(\\W|$)').test(q))return OFFLINE[k]}return null}
-function chapterIndexFor(s,topic,ch){if(ch)return ch.index;const i=s.chapters.findIndex(c=>c[0].toLowerCase()===topic.toLowerCase());return i>=0?i:null}
+    /* ---------- cache ---------- */
+    function cacheGet(k) { return (lsGet(LS_CACHE, {}))[k] || null }
+    function cacheSet(k, v) { const c = lsGet(LS_CACHE, {}); c[k] = v; const ks = Object.keys(c); if (ks.length > 40) ks.sort((a, b) => (c[a].t || 0) - (c[b].t || 0)).slice(0, ks.length - 40).forEach(x => delete c[x]); if (!lsSet(LS_CACHE, c)) lsSet(LS_CACHE, { [k]: v }) }
 
-async function teach(mode='explain',opts={}){if(busy)return;
- const s=opts.subject||currentSubject(),ch=('chapter' in opts)?opts.chapter:selectedChapter();
- const topic=(opts.topic!=null?opts.topic:$('topicInput').value.trim())||(ch?ch.title:'');
- if(!topic){showToast('Choose a chapter or type a topic first.');$('topicInput').focus();return}
- const baseExtra=('baseExtra' in opts)?opts.baseExtra:$('extraInput').value.trim(),refine=opts.refine||'';
- const extra=[baseExtra,refine].filter(Boolean).join('; '),lang=opts.lang||selectedLang,model=getModelConfig(selectedModel),chapterTitle=ch?ch.title:'';
- const key=[s.id,mode,topic.toLowerCase(),chapterTitle.toLowerCase(),extra.toLowerCase(),lang,selectedModel].join('|');
- const retry=()=>teach(mode,opts);
- setLoading(mode,s.name,topic,model.name);
- const base={subject:s.name,subjectId:s.id,topic,mode,chapter:chapterTitle,baseExtra,refine,lang,created:Date.now()};
- const studied=()=>{const i=chapterIndexFor(s,topic,ch);if(i!=null)markStudied(s.id,i)};
- let refs=[];
- try{
-  const hit=opts.force?null:cacheGet(key);
-  if(hit){const L={...base,text:hit.text,model:hit.model,fallback:!!hit.fallback,requested:hit.requested||'',cached:true};showLesson(L,hit.refs||[]);studied();return}
-  refs=await getWikipedia(`${s.name} ${topic} ICSE class 9`); // reference lookup first, then the AI call (never rejects)
-  const prompt=composePrompt(mode,s.name,topic,chapterTitle,extra,refs,lang);
-  try{
-   const r=await aiChat(prompt);
-   const L={...base,text:r.text,model:r.model,fallback:r.fallback,requested:r.requested};
-   cacheSet(key,{text:r.text,model:r.model,fallback:!!r.fallback,requested:r.requested||'',refs,t:Date.now()});
-   showLesson(L,refs);studied();
-   if(r.fallback)showToast(model.name+' was unavailable, so the default model answered.');
-   else if(mode==='explain'||mode==='notes'){saveLesson(L);showToast('Lesson ready — saved to your study library.')}
-  }catch(err){
-   const off=findOffline(topic),kind=classifyError(err);
-   if(off){const L={...base,text:off,offline:true,model:''};showLesson(L,refs);studied();showToast('Showing the built-in lesson: '+errorCopy(kind,err)[0].toLowerCase()+'.')}
-   else showError(topic,kind,err,retry);
-  }
- }finally{finishLoading()}
-}
-function subjectOf(L){return DB.find(s=>s.id===L.subjectId)||DB.find(s=>s.name===L.subject)||currentSubject()}
-function refineLesson(instr,force){const L=currentLesson;if(!L||busy)return;const s=subjectOf(L);const ci=L.chapter?s.chapters.findIndex(c=>c[0]===L.chapter):-1;
- // An explicit "Hindi" refine overrides the language setting, otherwise the prompt would carry two contradictory language rules.
- const wantsHindi=/\b(in|into|to)\s+(simple\s+)?hindi\b|devanagari|हिन्दी|हिंदी/i.test(instr||'');
- const lang=wantsHindi?'hindi':(LANG_RULES[L.lang]?L.lang:undefined);
- teach(L.mode,{lang,subject:s,topic:L.topic,chapter:ci>=0?{title:s.chapters[ci][0],page:s.chapters[ci][1],index:ci}:null,baseExtra:L.baseExtra||'',refine:instr||(force?L.refine||'':''),force})}
-function newLesson(){currentLesson=null;$('lessonKicker').textContent='READY WHEN YOU ARE';$('lessonTitle').textContent='Your lesson will appear here';$('lessonMeta').innerHTML='';$('lessonBody').innerHTML=EMPTY_HTML;['lessonActions','refineRow','quizBox','referencesWrap'].forEach(id=>$(id).classList.add('hidden'));currentRefs=[];$('topicInput').value='';$('chapterSelect').value='';$('extraInput').value='';syncChips();saveSelection();$('teachPanel').scrollIntoView({behavior:'smooth',block:'start'});$('topicInput').focus()}
+    /* ---------- markdown, maths, diagrams ---------- */
+    const SVG_TAGS = new Set(['svg', 'g', 'path', 'circle', 'ellipse', 'rect', 'line', 'polyline', 'polygon', 'text', 'tspan', 'defs', 'marker', 'title', 'desc']);
+    const SVG_ATTRS = new Set(['viewbox', 'x', 'y', 'x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'r', 'rx', 'ry', 'd', 'points', 'fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'stroke-linecap', 'stroke-linejoin', 'opacity', 'fill-opacity', 'stroke-opacity', 'transform', 'text-anchor', 'dominant-baseline', 'font-size', 'font-weight', 'font-style', 'id', 'marker-end', 'marker-start', 'refx', 'refy', 'markerwidth', 'markerheight', 'orient', 'dx', 'dy', 'preserveaspectratio', 'fill-rule', 'width', 'height']);
+    let svgSeq = 0;
+    function sanitizeSvg(src) {
+      try {
+        if (!src || src.length > 30000) return ''; const doc = new DOMParser().parseFromString(src, 'text/html'); const root = doc.body.querySelector('svg'); if (!root) return ''; const pre = 'sv' + (++svgSeq) + '-'; let count = 0;
+        const clean = el => {
+          for (const a of [...el.attributes]) {
+            const n = a.name.toLowerCase(), v = a.value; if (!SVG_ATTRS.has(n) || /javascript:|data:|expression\s*\(|[<>]/i.test(v)) { el.removeAttribute(a.name); continue }
+            if (/url\(/i.test(v)) { const m = v.trim().match(/^url\(#([\w-]+)\)$/); if (!m) { el.removeAttribute(a.name) } else el.setAttribute(a.name, `url(#${pre}${m[1]})`); continue }
+            if (n === 'id') el.setAttribute('id', pre + v.replace(/[^\w-]/g, ''))
+          }
+        };
+        const walk = el => { for (const c of [...el.children]) { if (!SVG_TAGS.has(c.localName.toLowerCase()) || ++count > 400) { c.remove(); continue } clean(c); walk(c) } };
+        if (!root.getAttribute('viewBox')) { const w = parseFloat(root.getAttribute('width')), h = parseFloat(root.getAttribute('height')); root.setAttribute('viewBox', `0 0 ${w > 0 ? w : 400} ${h > 0 ? h : 300}`) }
+        clean(root); walk(root); root.removeAttribute('width'); root.removeAttribute('height');
+        const title = (root.querySelector('title')?.textContent || 'Diagram').trim().slice(0, 120);
+        return `<figure class="diagram" role="img" aria-label="${esc(title)}">${root.outerHTML}</figure>`
+      } catch { return '' }
+    }
+    function mathHtml(m) { if (window.katex) { try { return katex.renderToString(m.tex, { displayMode: m.display, throwOnError: false, strict: 'ignore', trust: false }) } catch { } } return `<code>${esc(m.tex)}</code>` }
+    function renderMarkdown(md) {
+      let codes = [], maths = []; md = String(md || '').replace(/```([\w+-]*)[ \t]*\n?([\s\S]*?)```/g, (_, lang, code) => { let html = ''; if (/^\s*<svg[\s>]/i.test(code) && ['', 'svg', 'xml', 'html'].includes(lang.toLowerCase())) html = sanitizeSvg(code); if (!html) html = `<pre><code>${esc(code.trimEnd())}</code></pre>`; codes.push(html); return `%%CODE${codes.length - 1}%%` });
+      const stash = (tex, display) => { maths.push({ tex, display }); return `%%MATH${maths.length - 1}%%` };
+      md = md.replace(/\\\$/g, '\u0001').replace(/\$\$([\s\S]+?)\$\$/g, (_, t) => stash(t.trim(), true)).replace(/\\\[([\s\S]+?)\\\]/g, (_, t) => stash(t.trim(), true)).replace(/\\\(([\s\S]+?)\\\)/g, (_, t) => stash(t.trim(), false)).replace(/\$(?!\s)([^$\n]*?[^\s$])\$(?!\d)/g, (_, t) => stash(t, false));
+      let lines = esc(md).split('\n'), out = '', para = [], list = null; const flushP = () => { if (para.length) { out += '<p>' + para.join('<br>') + '</p>'; para = [] } }; const closeList = () => { if (list) { out += `</${list}>`; list = null } }; for (let line of lines) { let t = line.trim(); let codeMatch = t.match(/^%%CODE(\d+)%%$/); if (codeMatch) { flushP(); closeList(); out += codes[+codeMatch[1]]; continue } if (!t) { flushP(); closeList(); continue } let h = t.match(/^(#{1,3})\s+(.*)$/); if (h) { flushP(); closeList(); let n = h[1].length; out += `<h${n}>${inlineMd(h[2])}</h${n}>`; continue } if (/^---+$/.test(t)) { flushP(); closeList(); out += '<hr>'; continue } let li = t.match(/^[-*]\s+(.*)$/); let oi = t.match(/^(\d+)[.)]\s+(.*)$/); if (oi) { flushP(); closeList(); out += `<p style="margin-top:12px;margin-bottom:4px"><strong>${oi[1]}.</strong> ${inlineMd(oi[2])}</p>`; continue } if (li) { flushP(); if (list !== 'ul') { closeList(); list = 'ul'; out += `<ul>` } out += `<li>${inlineMd(li[1])}</li>`; continue } if (t.startsWith('&gt; ')) { flushP(); closeList(); out += `<blockquote>${inlineMd(t.slice(5))}</blockquote>`; continue } closeList(); para.push(inlineMd(t)) } flushP(); closeList();
+      return out.replace(/%%MATH(\d+)%%/g, (_, i) => mathHtml(maths[+i])).replace(/%%CODE(\d+)%%/g, (_, i) => codes[+i] ?? '').replace(/\u0001/g, '$')
+    }
+    function inlineMd(s) { return s.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>').replace(/\[(.+?)\]\((https?:[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>') }
 
-/* ---------- quiz grading ---------- */
-async function gradeQuiz(){const L=currentLesson;if(grading||!L||L.mode!=='quiz')return;const ans=$('quizAnswers').value.trim();if(!ans){showToast('Type your answers first.');$('quizAnswers').focus();return}
- grading=true;const btn=$('gradeBtn'),fb=$('quizFeedback');btn.disabled=true;btn.textContent='Checking…';fb.classList.remove('hidden');fb.innerHTML='<div class="loading"><div class="spinner"></div><strong>Marking your answers…</strong></div>';
- try{const r=await aiChat(composeGradePrompt(L.text,ans,L.lang));fb.innerHTML=`<article class="prose">${renderMarkdown(r.text)}</article>`}
- catch(err){const [t,m]=errorCopy(classifyError(err),err);fb.innerHTML=`<div class="callout error-box"><span>🌐</span><div><strong>${esc(t)}</strong>${esc(m)}</div></div>`}
- finally{grading=false;btn.disabled=false;btn.textContent='✓ Check my answers';fb.setAttribute('tabindex','-1');fb.focus({preventScroll:true});fb.scrollIntoView({behavior:'smooth',block:'nearest'})}}
+    /* ---------- lesson display ---------- */
+    function setLoading(mode, subject, topic, modelName) { busy = true; $('explainBtn').disabled = true; document.querySelectorAll('[data-mode]').forEach(b => b.disabled = true); $('lessonKicker').textContent = 'YOUR TEACHER IS PREPARING'; $('lessonTitle').textContent = topic; $('lessonMeta').innerHTML = `<span class="tag">${esc(subject)}</span><span class="tag orange">${mode === 'explain' ? 'Simple explanation' : mode === 'notes' ? 'Detailed notes' : mode === 'quiz' ? 'Practice quiz' : 'Flashcards'}</span><span class="tag">${esc(modelName)}</span>`;['lessonActions', 'referencesWrap', 'refineRow', 'quizBox'].forEach(id => $(id).classList.add('hidden')); $('lessonBody').innerHTML = '<div class="loading"><div class="spinner"></div><strong>Putting the ideas into simple language…</strong><p class="muted">Using ' + esc(modelName) + ' · preparing your lesson.</p></div>' }
+    function finishLoading() { busy = false; $('explainBtn').disabled = false; document.querySelectorAll('[data-mode]').forEach(b => b.disabled = false) }
+    function renderRefs(refs) { currentRefs = refs || []; if (currentRefs.length) { $('referencesWrap').classList.remove('hidden'); $('referenceGrid').innerHTML = currentRefs.map(r => `<a class="reference-card" href="${esc(r.url)}" target="_blank" rel="noopener noreferrer"><strong>${esc(r.title)}</strong><p>${esc(r.extract)}</p><small>Open Wikipedia ↗</small></a>`).join('') } else $('referencesWrap').classList.add('hidden') }
+    function showLesson(L, refs, kicker) {
+      currentLesson = L;
+      $('lessonKicker').textContent = kicker || (L.offline ? 'BUILT-IN QUICK LESSON' : 'YOUR PERSONAL LESSON'); $('lessonTitle').textContent = L.topic;
+      const src = L.offline ? 'Offline guide' : (L.cached ? 'Cached · ' : '') + (L.model || (L.fromSaved ? 'Saved on this device' : 'AI-generated'));
+      $('lessonMeta').innerHTML = `<span class="tag">${esc(L.subject)}</span><span class="tag orange">${esc(MODE_LABEL[L.mode] || 'Lesson')}</span><span class="tag">${esc(src)}</span>${L.lang && L.lang !== 'english' ? `<span class="tag">${esc(L.lang === 'hindi' ? 'Hindi' : 'Hinglish')}</span>` : ''}`;
+      $('lessonBody').innerHTML = (L.fallback && L.requested ? `<div role="alert" style="background:#fff8db;border:1px solid #f2c744;color:#7a5b00;border-radius:14px;padding:12px 14px;margin:0 0 14px;font-weight:600">⚠️ This model (${esc(L.requested)}) was unavailable so the response was generated by default model (${esc(L.model)}).</div>` : '') + `<article class="prose" lang="${L.lang === 'hindi' ? 'hi' : L.lang === 'hinglish' ? 'hi-Latn' : 'en'}">${renderMarkdown(L.text)}</article>`;
+      $('lessonActions').classList.remove('hidden'); $('refineRow').classList.remove('hidden');
+      const quiz = L.mode === 'quiz' && !L.offline; $('quizBox').classList.toggle('hidden', !quiz); if (quiz) { $('quizAnswers').value = ''; $('quizFeedback').innerHTML = ''; $('quizFeedback').classList.add('hidden') }
+      renderRefs(refs); updateSaveBtn();
+      $('lessonPanel').scrollIntoView({ behavior: 'smooth', block: 'start' }); $('lessonTitle').focus({ preventScroll: true })
+    }
+    function showError(topic, kind, err, retry) { const [title, msg] = errorCopy(kind, err); currentLesson = null; $('lessonKicker').textContent = 'A LITTLE TECHNICAL PAUSE'; $('lessonTitle').textContent = topic; $('lessonBody').innerHTML = `<div class="callout error-box"><span>🌐</span><div><strong>${esc(title)}</strong>${esc(msg)}<br><br>The chapter index still works.<br><button class="btn btn-primary btn-sm" id="retryBtn" style="margin-top:8px">↻ Try again</button></div></div>`; $('retryBtn').addEventListener('click', retry); $('lessonTitle').focus({ preventScroll: true }) }
+    function findOffline(topic) { const q = topic.toLowerCase(); const keys = Object.keys(OFFLINE).sort((a, b) => b.length - a.length); for (const k of keys) { const base = k.replace(/s$/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); if (new RegExp('(^|\\W)' + base + 's?(\\W|$)').test(q)) return OFFLINE[k] } return null }
+    function chapterIndexFor(s, topic, ch) { if (ch) return ch.index; const i = s.chapters.findIndex(c => c[0].toLowerCase() === topic.toLowerCase()); return i >= 0 ? i : null }
 
-/* ---------- saving, library, review ---------- */
-function sameLesson(a,b){return a.subject===b.subject&&a.topic===b.topic&&a.mode===b.mode}
-function isSaved(L){return !!L&&getSaved().some(x=>sameLesson(x,L))}
-function updateSaveBtn(){const b=$('saveLessonBtn'),on=isSaved(currentLesson);b.textContent=on?'♥ Saved':'♡ Save';b.setAttribute('aria-pressed',on?'true':'false');b.title=on?'Saved. Click to remove it from your library':'Save to your library'}
-function saveLesson(L){let a=getSaved();const old=a.find(x=>sameLesson(x,L));a=a.filter(x=>!sameLesson(x,L));const now=Date.now();const item={id:old?old.id:(now.toString(36)+Math.random().toString(36).slice(2,6)),text:L.text,subject:L.subject,subjectId:L.subjectId,topic:L.topic,mode:L.mode,chapter:L.chapter||'',baseExtra:L.baseExtra||'',refine:L.refine||'',lang:L.lang||'english',model:L.offline?'':(L.model||''),fallback:!!L.fallback,requested:L.requested||'',offline:!!L.offline,created:now,stage:0,reviewAt:now+3*DAY};a.unshift(item);setSaved(a.slice(0,120));updateSaveBtn();pushLesson(item)}
-function toggleSave(){const L=currentLesson;if(!L){showToast('There is no lesson to save yet.');return}
- if(isSaved(L)){getSaved().filter(x=>sameLesson(x,L)).forEach(x=>deleteRemote(x.id));setSaved(getSaved().filter(x=>!sameLesson(x,L)));updateSaveBtn();showToast('Removed from your library.')}else{saveLesson(L);showToast(signedIn?'Saved to your account.':'Saved to My library on this device.')}}
-async function copyCurrent(){if(!currentLesson)return;try{await navigator.clipboard.writeText(currentLesson.text);showToast('Lesson copied to clipboard.')}catch{showToast('Clipboard access was blocked by this browser.')}}
-function dueAt(x){if(x.reviewAt===null)return null;return x.reviewAt===undefined?x.created+3*DAY:x.reviewAt}
-function isDue(x){const d=dueAt(x);return d!=null&&Date.now()>=d}
-function markReviewed(id){const a=getSaved(),x=a.find(y=>y.id===id);if(!x)return;x.stage=(x.stage||0)+1;x.reviewAt=x.stage>=2?null:Math.max(x.created+7*DAY,Date.now()+DAY);setSaved(a);pushLesson(x);renderLibrary();showToast(x.stage>=2?'Nice! All reviews done for this lesson.':'Marked reviewed. Next review in a few days.')}
-function updateSavedCount(){const a=getSaved(),due=a.filter(isDue).length;$('savedCount').textContent=a.length;const b=$('dueBadge');b.textContent=due;b.classList.toggle('hidden',!due);$('libraryTop').title=due?`${due} saved lesson${due===1?'':'s'} due for review`:'My library'}
-function renderResume(){const a=getSaved(),el=$('resumeCard');if(!a.length){el.classList.add('hidden');el.innerHTML='';return}const x=a[0];el.classList.remove('hidden');el.innerHTML=`<div class="saved-icon">↺</div><div class="saved-main"><small>CONTINUE WHERE YOU LEFT OFF</small><strong>${esc(x.topic)}</strong><small>${esc(x.subject)} · ${esc(MODE_LABEL[x.mode]||x.mode)} · ${new Date(x.created).toLocaleDateString()}</small></div><button class="btn btn-primary btn-sm" id="resumeBtn">Continue</button>`;$('resumeBtn').addEventListener('click',()=>openSaved(x.id))}
-function openSaved(id){const item=getSaved().find(x=>x.id===id);if(!item)return;showStudy();showLesson({...item,fromSaved:true},[],'SAVED LESSON')}
-function showLibrary(){if(busy){showToast('Please wait for the lesson to finish.');return}$('teachPanel').classList.add('hidden');$('lessonPanel').classList.add('hidden');$('databasePanel').classList.add('hidden');$('libraryPanel').classList.remove('hidden');renderLibrary();$('libraryPanel').scrollIntoView({behavior:'smooth',block:'start'})}
-function showStudy(){$('teachPanel').classList.remove('hidden');$('lessonPanel').classList.remove('hidden');$('databasePanel').classList.remove('hidden');$('libraryPanel').classList.add('hidden');$('teachPanel').scrollIntoView({behavior:'smooth',block:'start'})}
-function renderLibrary(){const a=getSaved();updateSavedCount();if(!a.length){$('libraryContent').innerHTML='<div class="empty-state"><div class="empty-icon">📚</div><h3>Your library is waiting for its first lesson.</h3><p>Create a lesson, then save it to keep your revision notes here.</p></div>';return}
- $('libraryContent').innerHTML=`<div class="action-row" style="margin:0 0 12px"><span class="tag">${a.length} saved lesson${a.length===1?'':'s'}</span><button class="btn btn-outline btn-sm" id="exportLibrary">⇩ Export library</button><button class="btn btn-outline btn-sm" id="clearLibrary">Clear all</button></div><div class="library-list">${a.map(x=>{const due=isDue(x);return `<div class="saved-card"><div class="saved-icon">${x.mode==='quiz'?'✎':x.mode==='flashcards'?'▧':'▤'}</div><div class="saved-main"><strong>${esc(x.topic)}</strong><small>${esc(x.subject)} · ${esc(x.mode)} · ${new Date(x.created).toLocaleDateString()}</small></div>${due?'<span class="tag due">Review due</span>':''}<div class="saved-actions">${due?`<button class="btn btn-light btn-sm" data-reviewed="${esc(x.id)}">✓ Reviewed</button>`:''}<button class="btn btn-light btn-sm" data-open-saved="${esc(x.id)}">Open</button><button class="btn btn-outline btn-sm" data-delete-saved="${esc(x.id)}" aria-label="Delete saved lesson">×</button></div></div>`}).join('')}</div>`;
- $('exportLibrary').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(a,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='studynest-study-library.json';link.click();URL.revokeObjectURL(url);});
- $('clearLibrary').addEventListener('click',()=>{if(confirm(signedIn?'Delete every saved lesson from your account and this device?':'Delete every saved lesson from this device?')){clearRemote();setSaved([]);renderLibrary();showToast('Saved lessons cleared.')}});
- document.querySelectorAll('[data-open-saved]').forEach(b=>b.addEventListener('click',()=>openSaved(b.dataset.openSaved)));
- document.querySelectorAll('[data-reviewed]').forEach(b=>b.addEventListener('click',()=>markReviewed(b.dataset.reviewed)));
- document.querySelectorAll('[data-delete-saved]').forEach(b=>b.addEventListener('click',()=>{deleteRemote(b.dataset.deleteSaved);setSaved(getSaved().filter(x=>x.id!==b.dataset.deleteSaved));renderLibrary();showToast('Lesson deleted.')}));
-}
-init();
-</script>
+    async function teach(mode = 'explain', opts = {}) {
+      if (busy) return;
+      const s = opts.subject || currentSubject(), ch = ('chapter' in opts) ? opts.chapter : selectedChapter();
+      const topic = (opts.topic != null ? opts.topic : $('topicInput').value.trim()) || (ch ? ch.title : '');
+      if (!topic) { showToast('Choose a chapter or type a topic first.'); $('topicInput').focus(); return }
+      const baseExtra = ('baseExtra' in opts) ? opts.baseExtra : $('extraInput').value.trim(), refine = opts.refine || '';
+      const extra = [baseExtra, refine].filter(Boolean).join('; '), lang = opts.lang || selectedLang, model = getModelConfig(selectedModel), chapterTitle = ch ? ch.title : '';
+      const key = [s.id, mode, topic.toLowerCase(), chapterTitle.toLowerCase(), extra.toLowerCase(), lang, selectedModel].join('|');
+      const retry = () => teach(mode, opts);
+      setLoading(mode, s.name, topic, model.name);
+      const base = { subject: s.name, subjectId: s.id, topic, mode, chapter: chapterTitle, baseExtra, refine, lang, created: Date.now() };
+      const studied = () => { const i = chapterIndexFor(s, topic, ch); if (i != null) markStudied(s.id, i) };
+      let refs = [];
+      try {
+        const hit = opts.force ? null : cacheGet(key);
+        if (hit) { const L = { ...base, text: hit.text, model: hit.model, fallback: !!hit.fallback, requested: hit.requested || '', cached: true }; showLesson(L, hit.refs || []); studied(); return }
+        refs = await getWikipedia(`${s.name} ${topic} ICSE class 9`); // reference lookup first, then the AI call (never rejects)
+        const prompt = composePrompt(mode, s.name, topic, chapterTitle, extra, refs, lang);
+        try {
+          const r = await aiChat(prompt);
+          const L = { ...base, text: r.text, model: r.model, fallback: r.fallback, requested: r.requested };
+          cacheSet(key, { text: r.text, model: r.model, fallback: !!r.fallback, requested: r.requested || '', refs, t: Date.now() });
+          showLesson(L, refs); studied();
+          if (r.fallback) showToast(model.name + ' was unavailable, so the default model answered.');
+          else if (mode === 'explain' || mode === 'notes') { saveLesson(L); showToast('Lesson ready — saved to your study library.') }
+        } catch (err) {
+          const off = findOffline(topic), kind = classifyError(err);
+          if (off) { const L = { ...base, text: off, offline: true, model: '' }; showLesson(L, refs); studied(); showToast('Showing the built-in lesson: ' + errorCopy(kind, err)[0].toLowerCase() + '.') }
+          else showError(topic, kind, err, retry);
+        }
+      } finally { finishLoading() }
+    }
+    function subjectOf(L) { return DB.find(s => s.id === L.subjectId) || DB.find(s => s.name === L.subject) || currentSubject() }
+    function refineLesson(instr, force) {
+      const L = currentLesson; if (!L || busy) return; const s = subjectOf(L); const ci = L.chapter ? s.chapters.findIndex(c => c[0] === L.chapter) : -1;
+      // An explicit "Hindi" refine overrides the language setting, otherwise the prompt would carry two contradictory language rules.
+      const wantsHindi = /\b(in|into|to)\s+(simple\s+)?hindi\b|devanagari|हिन्दी|हिंदी/i.test(instr || '');
+      const lang = wantsHindi ? 'hindi' : (LANG_RULES[L.lang] ? L.lang : undefined);
+      teach(L.mode, { lang, subject: s, topic: L.topic, chapter: ci >= 0 ? { title: s.chapters[ci][0], page: s.chapters[ci][1], index: ci } : null, baseExtra: L.baseExtra || '', refine: instr || (force ? L.refine || '' : ''), force })
+    }
+    function newLesson() { currentLesson = null; $('lessonKicker').textContent = 'READY WHEN YOU ARE'; $('lessonTitle').textContent = 'Your lesson will appear here'; $('lessonMeta').innerHTML = ''; $('lessonBody').innerHTML = EMPTY_HTML;['lessonActions', 'refineRow', 'quizBox', 'referencesWrap'].forEach(id => $(id).classList.add('hidden')); currentRefs = []; $('topicInput').value = ''; $('chapterSelect').value = ''; $('extraInput').value = ''; syncChips(); saveSelection(); $('teachPanel').scrollIntoView({ behavior: 'smooth', block: 'start' }); $('topicInput').focus() }
+
+    /* ---------- quiz grading ---------- */
+    async function gradeQuiz() {
+      const L = currentLesson; if (grading || !L || L.mode !== 'quiz') return; const ans = $('quizAnswers').value.trim(); if (!ans) { showToast('Type your answers first.'); $('quizAnswers').focus(); return }
+      grading = true; const btn = $('gradeBtn'), fb = $('quizFeedback'); btn.disabled = true; btn.textContent = 'Checking…'; fb.classList.remove('hidden'); fb.innerHTML = '<div class="loading"><div class="spinner"></div><strong>Marking your answers…</strong></div>';
+      try { const r = await aiChat(composeGradePrompt(L.text, ans, L.lang)); fb.innerHTML = `<article class="prose">${renderMarkdown(r.text)}</article>` }
+      catch (err) { const [t, m] = errorCopy(classifyError(err), err); fb.innerHTML = `<div class="callout error-box"><span>🌐</span><div><strong>${esc(t)}</strong>${esc(m)}</div></div>` }
+      finally { grading = false; btn.disabled = false; btn.textContent = '✓ Check my answers'; fb.setAttribute('tabindex', '-1'); fb.focus({ preventScroll: true }); fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' }) }
+    }
+
+    /* ---------- saving, library, review ---------- */
+    function sameLesson(a, b) { return a.subject === b.subject && a.topic === b.topic && a.mode === b.mode }
+    function isSaved(L) { return !!L && getSaved().some(x => sameLesson(x, L)) }
+    function updateSaveBtn() { const b = $('saveLessonBtn'), on = isSaved(currentLesson); b.textContent = on ? '♥ Saved' : '♡ Save'; b.setAttribute('aria-pressed', on ? 'true' : 'false'); b.title = on ? 'Saved. Click to remove it from your library' : 'Save to your library' }
+    function saveLesson(L) { let a = getSaved(); const old = a.find(x => sameLesson(x, L)); a = a.filter(x => !sameLesson(x, L)); const now = Date.now(); const item = { id: old ? old.id : (now.toString(36) + Math.random().toString(36).slice(2, 6)), text: L.text, subject: L.subject, subjectId: L.subjectId, topic: L.topic, mode: L.mode, chapter: L.chapter || '', baseExtra: L.baseExtra || '', refine: L.refine || '', lang: L.lang || 'english', model: L.offline ? '' : (L.model || ''), fallback: !!L.fallback, requested: L.requested || '', offline: !!L.offline, created: now, stage: 0, reviewAt: now + 3 * DAY }; a.unshift(item); setSaved(a.slice(0, 120)); updateSaveBtn(); pushLesson(item) }
+    function toggleSave() {
+      const L = currentLesson; if (!L) { showToast('There is no lesson to save yet.'); return }
+      if (isSaved(L)) { getSaved().filter(x => sameLesson(x, L)).forEach(x => deleteRemote(x.id)); setSaved(getSaved().filter(x => !sameLesson(x, L))); updateSaveBtn(); showToast('Removed from your library.') } else { saveLesson(L); showToast(signedIn ? 'Saved to your account.' : 'Saved to My library on this device.') }
+    }
+    async function copyCurrent() { if (!currentLesson) return; try { await navigator.clipboard.writeText(currentLesson.text); showToast('Lesson copied to clipboard.') } catch { showToast('Clipboard access was blocked by this browser.') } }
+    function dueAt(x) { if (x.reviewAt === null) return null; return x.reviewAt === undefined ? x.created + 3 * DAY : x.reviewAt }
+    function isDue(x) { const d = dueAt(x); return d != null && Date.now() >= d }
+    function markReviewed(id) { const a = getSaved(), x = a.find(y => y.id === id); if (!x) return; x.stage = (x.stage || 0) + 1; x.reviewAt = x.stage >= 2 ? null : Math.max(x.created + 7 * DAY, Date.now() + DAY); setSaved(a); pushLesson(x); renderLibrary(); showToast(x.stage >= 2 ? 'Nice! All reviews done for this lesson.' : 'Marked reviewed. Next review in a few days.') }
+    function updateSavedCount() { const a = getSaved(), due = a.filter(isDue).length; $('savedCount').textContent = a.length; const b = $('dueBadge'); b.textContent = due; b.classList.toggle('hidden', !due); $('libraryTop').title = due ? `${due} saved lesson${due === 1 ? '' : 's'} due for review` : 'My library' }
+    function renderResume() { const a = getSaved(), el = $('resumeCard'); if (!a.length) { el.classList.add('hidden'); el.innerHTML = ''; return } const x = a[0]; el.classList.remove('hidden'); el.innerHTML = `<div class="saved-icon">↺</div><div class="saved-main"><small>CONTINUE WHERE YOU LEFT OFF</small><strong>${esc(x.topic)}</strong><small>${esc(x.subject)} · ${esc(MODE_LABEL[x.mode] || x.mode)} · ${new Date(x.created).toLocaleDateString()}</small></div><button class="btn btn-primary btn-sm" id="resumeBtn">Continue</button>`; $('resumeBtn').addEventListener('click', () => openSaved(x.id)) }
+    function openSaved(id) { const item = getSaved().find(x => x.id === id); if (!item) return; showStudy(); showLesson({ ...item, fromSaved: true }, [], 'SAVED LESSON') }
+    function showLibrary() { if (busy) { showToast('Please wait for the lesson to finish.'); return } $('teachPanel').classList.add('hidden'); $('lessonPanel').classList.add('hidden'); $('databasePanel').classList.add('hidden'); $('libraryPanel').classList.remove('hidden'); renderLibrary(); $('libraryPanel').scrollIntoView({ behavior: 'smooth', block: 'start' }) }
+    function showStudy() { $('teachPanel').classList.remove('hidden'); $('lessonPanel').classList.remove('hidden'); $('databasePanel').classList.remove('hidden'); $('libraryPanel').classList.add('hidden'); $('teachPanel').scrollIntoView({ behavior: 'smooth', block: 'start' }) }
+    function renderLibrary() {
+      const a = getSaved(); updateSavedCount(); if (!a.length) { $('libraryContent').innerHTML = '<div class="empty-state"><div class="empty-icon">📚</div><h3>Your library is waiting for its first lesson.</h3><p>Create a lesson, then save it to keep your revision notes here.</p></div>'; return }
+      $('libraryContent').innerHTML = `<div class="action-row" style="margin:0 0 12px"><span class="tag">${a.length} saved lesson${a.length === 1 ? '' : 's'}</span><button class="btn btn-outline btn-sm" id="exportLibrary">⇩ Export library</button><button class="btn btn-outline btn-sm" id="clearLibrary">Clear all</button></div><div class="library-list">${a.map(x => { const due = isDue(x); return `<div class="saved-card"><div class="saved-icon">${x.mode === 'quiz' ? '✎' : x.mode === 'flashcards' ? '▧' : '▤'}</div><div class="saved-main"><strong>${esc(x.topic)}</strong><small>${esc(x.subject)} · ${esc(x.mode)} · ${new Date(x.created).toLocaleDateString()}</small></div>${due ? '<span class="tag due">Review due</span>' : ''}<div class="saved-actions">${due ? `<button class="btn btn-light btn-sm" data-reviewed="${esc(x.id)}">✓ Reviewed</button>` : ''}<button class="btn btn-light btn-sm" data-open-saved="${esc(x.id)}">Open</button><button class="btn btn-outline btn-sm" data-delete-saved="${esc(x.id)}" aria-label="Delete saved lesson">×</button></div></div>` }).join('')}</div>`;
+      $('exportLibrary').addEventListener('click', () => { const blob = new Blob([JSON.stringify(a, null, 2)], { type: 'application/json' }), url = URL.createObjectURL(blob), link = document.createElement('a'); link.href = url; link.download = 'studynest-study-library.json'; link.click(); URL.revokeObjectURL(url); });
+      $('clearLibrary').addEventListener('click', () => { if (confirm(signedIn ? 'Delete every saved lesson from your account and this device?' : 'Delete every saved lesson from this device?')) { clearRemote(); setSaved([]); renderLibrary(); showToast('Saved lessons cleared.') } });
+      document.querySelectorAll('[data-open-saved]').forEach(b => b.addEventListener('click', () => openSaved(b.dataset.openSaved)));
+      document.querySelectorAll('[data-reviewed]').forEach(b => b.addEventListener('click', () => markReviewed(b.dataset.reviewed)));
+      document.querySelectorAll('[data-delete-saved]').forEach(b => b.addEventListener('click', () => { deleteRemote(b.dataset.deleteSaved); setSaved(getSaved().filter(x => x.id !== b.dataset.deleteSaved)); renderLibrary(); showToast('Lesson deleted.') }));
+    }
+    init();
+  </script>
 </body>
+
 </html>
