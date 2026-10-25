@@ -1,6 +1,6 @@
 // StudyNest service worker: keeps the app shell available offline.
 // AI calls, Wikipedia and Puter are never intercepted (they need the network anyway).
-const CACHE = 'studynest-v2'
+const CACHE = 'studynest-v3'
 const SHELL = ['./', './index.html', './assets/app.css', './assets/auth.css', './manifest.webmanifest', './favicon.png', './favicon-32.png', './icon-192.png', './apple-touch-icon.png']
 
 self.addEventListener('install', e => {
@@ -22,6 +22,15 @@ self.addEventListener('fetch', e => {
       fetch(req)
         .then(res => { if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)) } return res })
         .catch(() => caches.match(req).then(r => r || caches.match('./index.html')))
+    )
+    return
+  }
+  // Scripts: network first, so a new deploy never runs with an old cached script.
+  if (same && req.destination === 'script') {
+    e.respondWith(
+      fetch(req)
+        .then(res => { if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)) } return res })
+        .catch(() => caches.match(req))
     )
     return
   }

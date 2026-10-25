@@ -2,6 +2,7 @@ import {
   getUser, login, signup, logout, updateUser, requestPasswordRecovery,
   handleAuthCallback, onAuthChange, AuthError, MissingIdentityError,
 } from '@netlify/identity'
+import * as Identity from '@netlify/identity'
 
 const $ = (id) => document.getElementById(id)
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
@@ -11,13 +12,28 @@ const CALLBACK_RE = /(recovery_token|confirmation_token|invite_token|email_chang
 const TOAST_MS = 3200 // keep in sync with TOAST_MS in index.html
 
 let currentUser = null
+let toastTimer = null
+let menuClose = null
+
+// Lets the study page renew an expired login before it retries a saved-lessons request.
+window.studynestRefreshSession = async () => {
+  try {
+    if (typeof Identity.refreshSession === 'function') { await Identity.refreshSession(); return true }
+    return !!(await getUser())
+  } catch { return false }
+}
+
+// One document-level listener for the user menu (renderHeader runs many times and must not add more).
+document.addEventListener('click', (e) => { const d = $('userDrop'); if (menuClose && d && !d.contains(e.target)) menuClose() })
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menuClose) { menuClose(); const b = $('userBtn'); if (b) b.focus() } })
 
 function toast(msg) {
   const t = $('toast')
   if (!t) return
   t.textContent = msg
   t.classList.add('show')
-  setTimeout(() => t.classList.remove('show'), TOAST_MS)
+  clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => t.classList.remove('show'), TOAST_MS)
 }
 
 function displayName(u) {
@@ -61,6 +77,7 @@ function validatePassword(pw) {
 function renderHeader() {
   const box = $('authControls')
   if (!box) return
+  menuClose = null
   const page = location.pathname
   if (!currentUser) {
     const next = page === '/' || page === '/index.html' ? '' : '?next=' + encodeURIComponent(page)
@@ -77,8 +94,7 @@ function renderHeader() {
     drop.classList.toggle('hidden', !open)
     btn.setAttribute('aria-expanded', String(open))
   })
-  document.addEventListener('click', (e) => { if (!drop.contains(e.target)) close() })
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { close(); btn.focus() } })
+  menuClose = close
   $('logoutBtn').addEventListener('click', doLogout)
 }
 

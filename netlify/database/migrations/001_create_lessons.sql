@@ -1,10 +1,10 @@
 -- StudyNest: lessons table
--- Run this once against your Netlify DB (Postgres) to set up storage for saved lessons.
+-- Netlify applies this file automatically during a production deploy, so there is no need to run it by hand.
 -- Each lesson belongs to a Netlify Identity user, referenced by their Identity user_id (a UUID/string).
 -- No separate "users" table is needed — accounts/passwords stay fully in Netlify Identity.
 
 CREATE TABLE IF NOT EXISTS lessons (
-  id          TEXT PRIMARY KEY,                 -- matches the client-side id (e.g. "m2k3j1ab12")
+  id          TEXT NOT NULL,                    -- matches the client-side id (e.g. "m2k3j1ab12"); unique per user (see PRIMARY KEY below)
   user_id     TEXT NOT NULL,                     -- Netlify Identity user id (the JWT "sub" claim)
   subject     TEXT NOT NULL,                     -- e.g. "Biology"
   topic       TEXT NOT NULL,                     -- e.g. "Tissues"
@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS lessons (
   offline     BOOLEAN NOT NULL DEFAULT FALSE,    -- true if generated from the offline fallback, not AI
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),-- server-side save time
   client_created BIGINT,                         -- original Date.now() from the browser, kept for display/sort parity
-  updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+  updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (user_id, id)
 );
 
 -- Fast "give me this user's lessons" lookups, newest first

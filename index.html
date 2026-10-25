@@ -304,12 +304,22 @@
     const LS_SYNCED = 'studynest_synced_user_v1', LS_PENDING = 'studynest_pending_delete_v1', LESSONS_API = '/api/lessons', META_KEYS = ['subjectId', 'chapter', 'baseExtra', 'refine', 'lang', 'stage', 'reviewAt'];
     let signedIn = false, syncing = null;
     function lessonToServer(x) { const meta = {}; META_KEYS.forEach(k => { if (x[k] !== undefined) meta[k] = x[k] }); return { id: x.id, subject: x.subject, topic: x.topic, mode: x.mode, text: x.text, offline: !!x.offline, created: x.created, model: x.model || '', fallback: !!x.fallback, requested: x.requested || '', meta } }
-    function lessonsApi(method, qs, body) { return fetch(LESSONS_API + (qs || ''), { method, credentials: 'same-origin', headers: body ? { 'Content-Type': 'application/json' } : undefined, body: body ? JSON.stringify(body) : undefined }) }
+    async function lessonsApi(method, qs, body) {
+      const go = () => fetch(LESSONS_API + (qs || ''), { method, credentials: 'same-origin', headers: body ? { 'Content-Type': 'application/json' } : undefined, body: body ? JSON.stringify(body) : undefined });
+      let r = await go();
+      // An expired login makes the server say 401: renew the session once and try again before giving up.
+      if (r.status === 401 && typeof window.studynestRefreshSession === 'function' && await window.studynestRefreshSession()) r = await go();
+      return r
+    }
+    // Returns true only when the server confirmed the save. A confirmed lesson is marked synced: true.
     async function pushLesson(x) {
-      if (!signedIn || !x) return; try {
-        const r = await lessonsApi('POST', '', lessonToServer(x)); if (r.status === 401) { signedIn = false; return }
-        if (r.ok) { const j = await r.json(); if (j.lesson && j.lesson.id !== x.id) { const a = getSaved(), m = a.find(y => y.id === x.id); if (m) { m.id = j.lesson.id; lsSet(STORAGE, a) } } }
-      } catch { }
+      if (!signedIn || !x) return false; try {
+        const r = await lessonsApi('POST', '', lessonToServer(x)); if (r.status === 401) { signedIn = false; return false }
+        if (!r.ok) return false;
+        const j = await r.json(), a = getSaved(), m = a.find(y => y.id === x.id);
+        if (m) { if (j.lesson && j.lesson.id !== x.id) m.id = j.lesson.id; m.synced = true; lsSet(STORAGE, a) }
+        return true
+      } catch { return false }
     }
     function queueDelete(id) { const p = lsGet(LS_PENDING, []); if (!p.includes(id)) { p.push(id); lsSet(LS_PENDING, p) } }
     function unqueueDelete(id) { lsSet(LS_PENDING, lsGet(LS_PENDING, []).filter(i => i !== id)) }
@@ -334,12 +344,12 @@
           if (res.status === 401) { signedIn = false; return }
           if (!res.ok) return;
           const data = await res.json(); signedIn = true;
-          const server = pend.includes('*') ? [] : (data.lessons || []).filter(x => !pend.includes(x.id));
+          const server = pend.includes('*') ? [] : (data.lessons || []).filter(x => !pend.includes(x.id)).map(x => ({ ...x, synced: true }));
           const merged = server.slice(), toPush = [];
           getSaved().forEach(l => {
             const i = merged.findIndex(x => sameLesson(x, l));
-            if (i < 0) { merged.push(l); toPush.push(l) }
-            else if ((l.created || 0) > (merged[i].created || 0)) { const m = { ...l, id: merged[i].id }; merged[i] = m; toPush.push(m) }
+            if (i < 0) { const m = { ...l, synced: false }; merged.push(m); toPush.push(m) }
+            else if ((l.created || 0) > (merged[i].created || 0)) { const m = { ...l, id: merged[i].id, synced: false }; merged[i] = m; toPush.push(m) }
           });
           merged.sort((a, b) => (b.created || 0) - (a.created || 0));
           setSaved(merged.slice(0, 120));
@@ -350,7 +360,17 @@
     }
     window.addEventListener('studynest-auth', e => {
       const d = e.detail || {};
-      if (d.type === 'logout') { signedIn = false; if (rawGet(LS_SYNCED)) { rawSet(LS_SYNCED, ''); lsSet(LS_PENDING, []); setSaved([]); if (!$('libraryPanel').classList.contains('hidden')) renderLibrary() } return }
+      if (d.type === 'logout') {
+        signedIn = false;
+        if (rawGet(LS_SYNCED)) {
+          // Lessons the server never confirmed stay on this device (still tied to this account) so they are not lost.
+          const keep = getSaved().filter(x => !x.synced);
+          if (keep.length) { setSaved(keep); showToast(keep.length + (keep.length === 1 ? ' lesson was not synced to your account, so it was kept on this device.' : ' lessons were not synced to your account, so they were kept on this device.')) }
+          else { rawSet(LS_SYNCED, ''); lsSet(LS_PENDING, []); setSaved([]) }
+          if (!$('libraryPanel').classList.contains('hidden')) renderLibrary()
+        }
+        return
+      }
       if (!d.userId) { signedIn = false; return }
       signedIn = true;
       if (d.type === 'init' || d.type === 'login') { const prev = rawGet(LS_SYNCED); if (prev && prev !== d.userId) { lsSet(LS_PENDING, []); setSaved([]) } rawSet(LS_SYNCED, d.userId); syncFromServer() }
@@ -431,7 +451,7 @@
     function composeGradePrompt(quiz, answers, lang) { return `You are a kind, accurate ICSE Class 9 (India) teacher marking a student's quiz.\n\nQUIZ:\n${quiz}\n\nSTUDENT'S ANSWERS:\n${answers}\n\nFor every question in order: say Correct, Partly correct or Incorrect; give the right answer; and if the student was wrong or partly right, explain the mistake in one or two simple sentences. Treat a missing answer as incorrect. Then give the total score out of the number of questions and two specific things to revise. Be encouraging and concise.\n${LANG_RULES[lang] || LANG_RULES.english}\n${MATH_RULE}` }
 
     /* ---------- AI + Wikipedia ---------- */
-    async function getWikipedia(query) { const url = 'https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=' + encodeURIComponent(query) + '&gsrnamespace=0&gsrlimit=4&prop=extracts|info&exintro=1&explaintext=1&inprop=url&format=json&origin=*'; try { const r = await fetch(url, { signal: AbortSignal.timeout(WIKI_TIMEOUT) }); if (!r.ok) throw new Error('Search unavailable'); const data = await r.json(); return Object.values(data.query?.pages || {}).map(p => ({ title: p.title, extract: (p.extract || '').slice(0, 1300), url: p.fullurl || `https://en.wikipedia.org/wiki/${encodeURIComponent(p.title.replaceAll(' ', '_'))}` })).filter(p => p.extract) } catch (e) { return [] } }
+    async function getWikipedia(query) { const url = 'https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=' + encodeURIComponent(query) + '&gsrnamespace=0&gsrlimit=4&prop=extracts|info&exintro=1&explaintext=1&inprop=url&format=json&origin=*'; const ac = new AbortController(), tm = setTimeout(() => ac.abort(), WIKI_TIMEOUT); try { const r = await fetch(url, { signal: ac.signal }); if (!r.ok) throw new Error('Search unavailable'); const data = await r.json(); return Object.values(data.query?.pages || {}).map(p => ({ title: p.title, extract: (p.extract || '').slice(0, 1300), url: p.fullurl || `https://en.wikipedia.org/wiki/${encodeURIComponent(p.title.replaceAll(' ', '_'))}` })).filter(p => p.extract) } catch (e) { return [] } finally { clearTimeout(tm) } }
     function extractResponse(resp) { if (typeof resp === 'string') return resp; if (resp?.message?.content) { const c = resp.message.content; if (typeof c === 'string') return c; if (Array.isArray(c)) return c.map(x => x.text || '').join('\n') } if (resp?.text) return resp.text; if (resp?.content) return typeof resp.content === 'string' ? resp.content : JSON.stringify(resp.content); return String(resp ?? 'No response returned.') }
     function withTimeout(p, ms) { let t; return Promise.race([Promise.resolve(p), new Promise((_, rej) => { t = setTimeout(() => { const e = new Error('The AI took too long to respond.'); e.kind = 'timeout'; e.ms = ms; rej(e) }, ms) })]).finally(() => clearTimeout(t)) }
     const delay = (ms, v) => new Promise(r => setTimeout(() => r(v), ms));
@@ -500,7 +520,7 @@
       let lines = esc(md).split('\n'), out = '', para = [], list = null; const flushP = () => { if (para.length) { out += '<p>' + para.join('<br>') + '</p>'; para = [] } }; const closeList = () => { if (list) { out += `</${list}>`; list = null } }; for (let line of lines) { let t = line.trim(); let codeMatch = t.match(/^%%CODE(\d+)%%$/); if (codeMatch) { flushP(); closeList(); out += codes[+codeMatch[1]]; continue } if (!t) { flushP(); closeList(); continue } let h = t.match(/^(#{1,3})\s+(.*)$/); if (h) { flushP(); closeList(); let n = h[1].length; out += `<h${n}>${inlineMd(h[2])}</h${n}>`; continue } if (/^---+$/.test(t)) { flushP(); closeList(); out += '<hr>'; continue } let li = t.match(/^[-*]\s+(.*)$/); let oi = t.match(/^(\d+)[.)]\s+(.*)$/); if (oi) { flushP(); closeList(); out += `<p style="margin-top:12px;margin-bottom:4px"><strong>${oi[1]}.</strong> ${inlineMd(oi[2])}</p>`; continue } if (li) { flushP(); if (list !== 'ul') { closeList(); list = 'ul'; out += `<ul>` } out += `<li>${inlineMd(li[1])}</li>`; continue } if (t.startsWith('&gt; ')) { flushP(); closeList(); out += `<blockquote>${inlineMd(t.slice(5))}</blockquote>`; continue } closeList(); para.push(inlineMd(t)) } flushP(); closeList();
       return out.replace(/%%MATH(\d+)%%/g, (_, i) => mathHtml(maths[+i])).replace(/%%CODE(\d+)%%/g, (_, i) => codes[+i] ?? '').replace(/\u0001/g, '$')
     }
-    function inlineMd(s) { return s.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>').replace(/\[(.+?)\]\((https?:[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>') }
+    function inlineMd(s) { return s.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*([^\s*](?:[^*]*?[^\s*])?)\*/g, '<em>$1</em>').replace(/\[(.+?)\]\((https?:[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>') }
 
     /* ---------- lesson display ---------- */
     function setLoading(mode, subject, topic, modelName) { busy = true; $('explainBtn').disabled = true; document.querySelectorAll('[data-mode]').forEach(b => b.disabled = true); $('lessonKicker').textContent = 'YOUR TEACHER IS PREPARING'; $('lessonTitle').textContent = topic; $('lessonMeta').innerHTML = `<span class="tag">${esc(subject)}</span><span class="tag orange">${mode === 'explain' ? 'Simple explanation' : mode === 'notes' ? 'Detailed notes' : mode === 'quiz' ? 'Practice quiz' : 'Flashcards'}</span><span class="tag">${esc(modelName)}</span>`;['lessonActions', 'referencesWrap', 'refineRow', 'quizBox'].forEach(id => $(id).classList.add('hidden')); $('lessonBody').innerHTML = '<div class="loading"><div class="spinner"></div><strong>Putting the ideas into simple language…</strong><p class="muted">Using ' + esc(modelName) + ' · preparing your lesson.</p></div>' }
@@ -576,15 +596,15 @@
     function sameLesson(a, b) { return a.subject === b.subject && a.topic === b.topic && a.mode === b.mode }
     function isSaved(L) { return !!L && getSaved().some(x => sameLesson(x, L)) }
     function updateSaveBtn() { const b = $('saveLessonBtn'), on = isSaved(currentLesson); b.textContent = on ? '♥ Saved' : '♡ Save'; b.setAttribute('aria-pressed', on ? 'true' : 'false'); b.title = on ? 'Saved. Click to remove it from your library' : 'Save to your library' }
-    function saveLesson(L) { let a = getSaved(); const old = a.find(x => sameLesson(x, L)); a = a.filter(x => !sameLesson(x, L)); const now = Date.now(); const item = { id: old ? old.id : (now.toString(36) + Math.random().toString(36).slice(2, 6)), text: L.text, subject: L.subject, subjectId: L.subjectId, topic: L.topic, mode: L.mode, chapter: L.chapter || '', baseExtra: L.baseExtra || '', refine: L.refine || '', lang: L.lang || 'english', model: L.offline ? '' : (L.model || ''), fallback: !!L.fallback, requested: L.requested || '', offline: !!L.offline, created: now, stage: 0, reviewAt: now + 3 * DAY }; a.unshift(item); setSaved(a.slice(0, 120)); updateSaveBtn(); pushLesson(item) }
+    function saveLesson(L) { let a = getSaved(); const old = a.find(x => sameLesson(x, L)); a = a.filter(x => !sameLesson(x, L)); const now = Date.now(); const item = { id: old ? old.id : (now.toString(36) + Math.random().toString(36).slice(2, 6)), text: L.text, subject: L.subject, subjectId: L.subjectId, topic: L.topic, mode: L.mode, chapter: L.chapter || '', baseExtra: L.baseExtra || '', refine: L.refine || '', lang: L.lang || 'english', model: L.offline ? '' : (L.model || ''), fallback: !!L.fallback, requested: L.requested || '', offline: !!L.offline, created: now, stage: 0, reviewAt: now + 3 * DAY, synced: false }; a.unshift(item); setSaved(a.slice(0, 120)); updateSaveBtn(); return pushLesson(item) }
     function toggleSave() {
       const L = currentLesson; if (!L) { showToast('There is no lesson to save yet.'); return }
-      if (isSaved(L)) { getSaved().filter(x => sameLesson(x, L)).forEach(x => deleteRemote(x.id)); setSaved(getSaved().filter(x => !sameLesson(x, L))); updateSaveBtn(); showToast('Removed from your library.') } else { saveLesson(L); showToast(signedIn ? 'Saved to your account.' : 'Saved to My library on this device.') }
+      if (isSaved(L)) { getSaved().filter(x => sameLesson(x, L)).forEach(x => deleteRemote(x.id)); setSaved(getSaved().filter(x => !sameLesson(x, L))); updateSaveBtn(); showToast('Removed from your library.') } else { const was = signedIn, p = saveLesson(L); if (!was) showToast('Saved to My library on this device.'); else p.then(ok => showToast(ok ? 'Saved to your account.' : 'Saved on this device only. Log in again or check your connection to sync it.')) }
     }
     async function copyCurrent() { if (!currentLesson) return; try { await navigator.clipboard.writeText(currentLesson.text); showToast('Lesson copied to clipboard.') } catch { showToast('Clipboard access was blocked by this browser.') } }
     function dueAt(x) { if (x.reviewAt === null) return null; return x.reviewAt === undefined ? x.created + 3 * DAY : x.reviewAt }
     function isDue(x) { const d = dueAt(x); return d != null && Date.now() >= d }
-    function markReviewed(id) { const a = getSaved(), x = a.find(y => y.id === id); if (!x) return; x.stage = (x.stage || 0) + 1; x.reviewAt = x.stage >= 2 ? null : Math.max(x.created + 7 * DAY, Date.now() + DAY); setSaved(a); pushLesson(x); renderLibrary(); showToast(x.stage >= 2 ? 'Nice! All reviews done for this lesson.' : 'Marked reviewed. Next review in a few days.') }
+    function markReviewed(id) { const a = getSaved(), x = a.find(y => y.id === id); if (!x) return; x.stage = (x.stage || 0) + 1; x.reviewAt = x.stage >= 2 ? null : Math.max(x.created + 7 * DAY, Date.now() + DAY); x.synced = false; setSaved(a); pushLesson(x); renderLibrary(); showToast(x.stage >= 2 ? 'Nice! All reviews done for this lesson.' : 'Marked reviewed. Next review in a few days.') }
     function updateSavedCount() { const a = getSaved(), due = a.filter(isDue).length; $('savedCount').textContent = a.length; const b = $('dueBadge'); b.textContent = due; b.classList.toggle('hidden', !due); $('libraryTop').title = due ? `${due} saved lesson${due === 1 ? '' : 's'} due for review` : 'My library' }
     function renderResume() { const a = getSaved(), el = $('resumeCard'); if (!a.length) { el.classList.add('hidden'); el.innerHTML = ''; return } const x = a[0]; el.classList.remove('hidden'); el.innerHTML = `<div class="saved-icon">↺</div><div class="saved-main"><small>CONTINUE WHERE YOU LEFT OFF</small><strong>${esc(x.topic)}</strong><small>${esc(x.subject)} · ${esc(MODE_LABEL[x.mode] || x.mode)} · ${new Date(x.created).toLocaleDateString()}</small></div><button class="btn btn-primary btn-sm" id="resumeBtn">Continue</button>`; $('resumeBtn').addEventListener('click', () => openSaved(x.id)) }
     function openSaved(id) { const item = getSaved().find(x => x.id === id); if (!item) return; showStudy(); showLesson({ ...item, fromSaved: true }, [], 'SAVED LESSON') }

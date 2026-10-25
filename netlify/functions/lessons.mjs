@@ -11,15 +11,14 @@
 //   DELETE /api/lessons?id=<id>    -> delete one lesson
 //   DELETE /api/lessons?all=true   -> delete all of the user's lessons
 //
-// Needs NETLIFY_DATABASE_URL (set automatically when Netlify DB is enabled)
-// and netlify/database/migrations/001 + 002 run against the database.
+// Needs NETLIFY_DATABASE_URL (set automatically when Netlify Database is enabled).
+// The files in netlify/database/migrations/ (001, 002) are applied by Netlify during each production deploy.
 
 import { getUser } from '@netlify/identity'
 import { neon } from '@netlify/neon'
 
 export const config = { path: '/api/lessons' }
 
-const sql = neon() // reads NETLIFY_DATABASE_URL automatically
 const MODES = ['explain', 'notes', 'quiz', 'flashcards']
 const MAX_TEXT = 200_000
 const MAX_META = 8_000
@@ -55,6 +54,8 @@ export default async (req) => {
   const userId = user.id
 
   try {
+    // Created here (not at the top of the file) so a missing database gives the friendly 500 below instead of crashing the function.
+    const sql = neon() // reads NETLIFY_DATABASE_URL automatically
     if (req.method === 'GET') {
       const rows = await sql`
         SELECT id, subject, topic, mode, text, offline, model, fallback, requested_model, meta,

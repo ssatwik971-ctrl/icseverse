@@ -1,5 +1,5 @@
 -- StudyNest: extra lesson details so saved lessons sync fully between devices.
--- Safe to run more than once. Run it after 001_create_lessons.sql (new and existing databases).
+-- Netlify applies this after 001_create_lessons.sql during a deploy. Safe to run more than once.
 
 -- Which model wrote the lesson, and whether the default model answered because the chosen one failed
 -- (this is what drives the yellow warning on saved lessons).
