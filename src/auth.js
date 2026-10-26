@@ -48,6 +48,18 @@ function safeNext() {
 
 function friendlyError(err, ctx) {
   if (err instanceof MissingIdentityError) return 'Accounts are not available right now. Please try again later.'
+  if (ctx === 'login') {
+    // Read the status from wherever the library put it, and look at the message too.
+    const status = Number(err?.status ?? err?.statusCode ?? err?.cause?.status) || 0
+    const m = String(err?.message || err?.cause?.message || '').toLowerCase()
+    if (m.includes('not confirmed') || m.includes('confirm your')) return 'Please confirm your email first. Check your inbox for the confirmation link.'
+    // Real connection or server trouble: no network, or a 5xx.
+    const offline = (typeof navigator !== 'undefined' && navigator.onLine === false) ||
+      err instanceof TypeError || /failed to fetch|networkerror|network request|load failed/.test(m)
+    if (offline || status >= 500) return 'Something went wrong. Please check your connection and try again.'
+    // Anything else from the login call means the server answered and said no.
+    return 'Incorrect email or password.'
+  }
   if (err instanceof AuthError) {
     const m = (err.message || '').toLowerCase()
     if (ctx === 'login') {
