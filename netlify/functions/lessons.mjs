@@ -57,6 +57,19 @@ export default async (req) => {
     // Created here (not at the top of the file) so a missing database gives the friendly 500 below instead of crashing the function.
     const db = getDatabase() // Netlify Database connects by itself; no env variable needed
     const sql = async (strings, ...vals) => { const r = await db.sql(strings, ...vals); return Array.isArray(r) ? r : (r && r.rows) || [] }
+    // Remember who this user is (name + email) next to their id, so you can tell users apart in the database.
+    // A failure here must never block the lessons, so it is wrapped on its own.
+    try {
+      const name = String(user.name || user.userMetadata?.full_name || '').trim().slice(0, 60) || null
+      const email = String(user.email || '').slice(0, 200) || null
+      await sql`
+        INSERT INTO users (user_id, display_name, email)
+        VALUES (${userId}, ${name}, ${email})
+        ON CONFLICT (user_id)
+        DO UPDATE SET display_name = EXCLUDED.display_name, email = EXCLUDED.email, last_seen = now()
+      `
+    } catch (e) { console.error('users upsert failed:', e) }
+
     if (req.method === 'GET') {
       const rows = await sql`
         SELECT id, subject, topic, mode, text, offline, model, fallback, requested_model, meta,
