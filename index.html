@@ -595,6 +595,8 @@
     }
     async function gradeQuiz() {
       const L = currentLesson; if (grading || !L || L.mode !== 'quiz') return; const ans = $('quizAnswers').value.trim(); if (!ans) { showToast('Type your answers first.'); $('quizAnswers').focus(); return }
+      // Very short text with no numbers or A-D letters (like "ok", "thanks") is neither answers nor a real question: do nothing, spend no credits.
+      if (ans.split(/\s+/).length <= 3 && !/\d/.test(ans) && !ans.includes('?') && !/^[a-d]([\s,;]+[a-d])*$/i.test(ans)) { showToast('Type your answers like 1-B, 2-D, or ask a full question.'); $('quizAnswers').focus(); return }
       const isQ = !looksLikeAnswers(ans);
       grading = true; const btn = $('gradeBtn'), fb = $('quizFeedback'); btn.disabled = true; btn.textContent = isQ ? 'Thinking…' : 'Checking…'; fb.classList.remove('hidden'); fb.innerHTML = `<div class="loading"><div class="spinner"></div><strong>${isQ ? 'Answering your question…' : 'Marking your answers…'}</strong></div>`;
       try { const r = await aiChat(isQ ? composeQuizHelpPrompt(L.text, ans, L.lang) : composeGradePrompt(L.text, ans, L.lang)); if (isQ) $('quizAnswers').value = ''; fb.innerHTML = `<article class="prose">${renderMarkdown(r.text)}</article>` }
