@@ -108,7 +108,7 @@ async function doLogout() {
   currentUser = null
   renderHeader()
   announceAuth('logout')
-  if (location.pathname === '/account') location.assign('/login')
+  if (location.pathname === '/account' || document.body.dataset.page === 'app') location.assign('/login')
   else toast('You have been logged out.')
 }
 
@@ -348,6 +348,11 @@ async function boot() {
     }
   }
   try { currentUser = await getUser() } catch { currentUser = null }
+  // The study page needs an account: logged-out visitors go to the login page first.
+  if (document.body.dataset.page === 'app') {
+    if (!currentUser) return location.replace('/login')
+    document.body.classList.add('auth-ok')
+  }
   renderHeader()
   // Defer so listeners registered by the page (index.html) are in place before the first event.
   setTimeout(() => announceAuth('init'), 0)
@@ -355,7 +360,7 @@ async function boot() {
     currentUser = user ?? (await getUser().catch(() => null))
     renderHeader()
     announceAuth(currentUser ? (event === 'login' ? 'login' : 'update') : 'logout')
-    if (!currentUser && location.pathname === '/account') location.replace('/login')
+    if (!currentUser && (location.pathname === '/account' || document.body.dataset.page === 'app')) location.replace('/login')
   })
   if (document.body.dataset.page === 'auth') await renderAuthPage()
 }

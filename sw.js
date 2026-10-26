@@ -1,6 +1,6 @@
 // StudyNest service worker: keeps the app shell available offline.
 // AI calls, Wikipedia and Puter are never intercepted (they need the network anyway).
-const CACHE = 'studynest-v4'
+const CACHE = 'studynest-v5'
 const SHELL = ['./', './index.html', './assets/app.css', './assets/auth.css', './manifest.webmanifest', './favicon.png', './favicon-32.png', './icon-192.png', './apple-touch-icon.png']
 
 self.addEventListener('install', e => {
