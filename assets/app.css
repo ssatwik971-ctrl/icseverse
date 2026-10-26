@@ -23,8 +23,8 @@
 .refine-row{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:18px;padding-top:14px;border-top:1px dashed var(--line)}
 .refine-row .tiny-label{margin-right:4px}
 .quiz-box{margin-top:18px;padding:15px;border:1px solid #ffdec6;background:#fffaf5;border-radius:16px}
-.quiz-box textarea{width:100%;min-height:84px;border:1px solid #dde3ed;border-radius:13px;padding:11px 12px;background:#fff;resize:vertical;margin-top:8px}
-.quiz-box textarea:focus{border-color:#f5a36b;outline:none;box-shadow:0 0 0 3px #ff8a3d1b}
+.quiz-box textarea,#followInput{width:100%;min-height:84px;border:1px solid #dde3ed;border-radius:13px;padding:11px 12px;background:#fff;resize:vertical;margin-top:8px}
+.quiz-box textarea:focus,#followInput:focus{border-color:#f5a36b;outline:none;box-shadow:0 0 0 3px #ff8a3d1b}
 .quiz-feedback{margin-top:14px;padding-top:12px;border-top:1px solid #ffe2cc}
 .diagram{margin:14px 0;padding:12px;background:#fbfcfe;border:1px solid var(--line);border-radius:14px;text-align:center}
 .diagram svg{max-width:100%;height:auto;max-height:420px}
