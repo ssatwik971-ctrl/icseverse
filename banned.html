@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Account banned — StudyNest</title>
+<link rel="icon" href="/favicon.png">
+<style>
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#f4f6fb;color:#17233f;display:grid;place-items:center;min-height:100vh;padding:16px}
+  .card{max-width:440px;background:#fff;border-radius:14px;padding:28px;box-shadow:0 6px 24px rgba(23,35,63,.12);text-align:center}
+  h1{margin:0 0 8px;font-size:22px} p{line-height:1.5;margin:8px 0} .reason{background:#fff4f4;border:1px solid #f3c6c6;border-radius:8px;padding:10px;color:#8a1f1f}
+  a{color:#2f5fd0}
+  @media (prefers-color-scheme:dark){body{background:#0f1626;color:#e8ecf6}.card{background:#17233f}.reason{background:#3a1d22;border-color:#6b2b33;color:#ffd0d0}a{color:#8fb0ff}}
+</style>
+</head>
+<body>
+<main class="card">
+  <h1>🚫 This account is banned</h1>
+  <p>You cannot use StudyNest with this account or on this device.</p>
+  <p class="reason" id="reason" hidden></p>
+  <p id="until" hidden></p>
+  <p>If you think this is a mistake, please <a href="/contact">contact us</a>.</p>
+</main>
+<script>
+  var q = new URLSearchParams(location.search), r = q.get('r'), u = q.get('u')
+  if (r) { var e = document.getElementById('reason'); e.textContent = 'Reason: ' + r; e.hidden = false }
+  if (u && !isNaN(Date.parse(u))) { var t = document.getElementById('until'); t.textContent = 'The ban ends on ' + new Date(u).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' }) + '.'; t.hidden = false }
+</script>
+</body>
+</html>

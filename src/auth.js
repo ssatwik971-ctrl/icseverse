@@ -15,6 +15,45 @@ let currentUser = null
 let toastTimer = null
 let menuClose = null
 
+/* ---------- device id + ban checks (server side: netlify/functions/guard.mjs) ---------- */
+const DEVICE_KEY = 'studynest_device_v1'
+function deviceId() {
+  let v = ''
+  try { v = localStorage.getItem(DEVICE_KEY) || '' } catch { /* blocked storage */ }
+  if (!v) { const m = document.cookie.match(/(?:^|; )sn_dev=([0-9a-f-]{36})/i); if (m) v = m[1] }
+  if (!v) v = (crypto.randomUUID && crypto.randomUUID()) || ''
+  if (!v) return ''
+  try { localStorage.setItem(DEVICE_KEY, v) } catch { /* ignore */ }
+  try { document.cookie = `sn_dev=${v}; max-age=315360000; path=/; SameSite=Lax; Secure` } catch { /* ignore */ }
+  return v
+}
+window.studynestDeviceId = deviceId
+
+// Returns the server's answer, or null if the check could not run (the site then keeps working).
+async function guardCall(action, extra = {}) {
+  try {
+    const r = await fetch('/api/guard', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, deviceId: deviceId(), ...extra }) })
+    return r.ok ? await r.json() : null
+  } catch { return null }
+}
+let goingBanned = false
+async function goBanned(g) {
+  if (goingBanned) return
+  goingBanned = true
+  try { await logout() } catch { /* the server blocks banned users anyway */ }
+  currentUser = null
+  const q = new URLSearchParams({ r: String(g?.reason || '').slice(0, 300) })
+  if (g?.until) q.set('u', g.until)
+  location.replace('/banned?' + q)
+}
+// Called by the study page on every AI request (fire and forget).
+window.studynestTrack = (type) => { if (currentUser) guardCall('event', { type }).then((g) => { if (g?.banned) goBanned(g) }) }
+async function sessionCheck() {
+  if (!currentUser || goingBanned) return
+  const g = await guardCall('session')
+  if (g?.banned) goBanned(g)
+}
+
 // Lets the study page renew an expired login before it retries a saved-lessons request.
 window.studynestRefreshSession = async () => {
   try {
@@ -184,12 +223,16 @@ const VIEWS = {
         setFieldError('email', EMAIL_RE.test(email) ? '' : 'Enter a valid email address.')
         setFieldError('password', pw ? '' : 'Enter your password.')
         if (!EMAIL_RE.test(email) || !pw) return
+        const pre = await guardCall('precheck', { email })
+        if (pre?.banned) return goBanned(pre)
         try {
           currentUser = await login(email, pw)
+          const g = await guardCall('session')
+          if (g?.banned) return goBanned(g)
           btn.dataset.done = '1'
           setMsg('ok', 'Logged in! Taking you back…')
           location.assign(safeNext())
-        } catch (err) { setMsg('error', friendlyError(err, 'login')) }
+        } catch (err) { guardCall('event', { type: 'login_fail', email }); setMsg('error', friendlyError(err, 'login')) }
       })
     },
   },
@@ -217,6 +260,8 @@ const VIEWS = {
         }
         Object.entries(errs).forEach(([k, v]) => setFieldError(k, v))
         if (Object.values(errs).some(Boolean)) return
+        const pre = await guardCall('precheck', { email })
+        if (pre?.banned) return goBanned(pre)
         try {
           const user = await signup(email, pw, { full_name: name })
           btn.dataset.done = '1'
@@ -366,6 +411,9 @@ async function boot() {
     document.body.classList.add('auth-ok')
   }
   renderHeader()
+  sessionCheck()
+  setInterval(sessionCheck, 90000)
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) sessionCheck() })
   // Defer so listeners registered by the page (index.html) are in place before the first event.
   setTimeout(() => announceAuth('init'), 0)
   onAuthChange(async (event, user) => {

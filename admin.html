@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Page not found — StudyNest</title>
+<link rel="icon" href="/favicon.png">
+<style>
+  :root{--bg:#f4f6fb;--card:#fff;--ink:#17233f;--mut:#667089;--line:#e1e6f0;--pri:#2f5fd0;--bad:#c0392b;--ok:#1e8e4e;--warn:#b7791f}
+  @media (prefers-color-scheme:dark){:root{--bg:#0f1626;--card:#17233f;--ink:#e8ecf6;--mut:#9aa6c2;--line:#2a3858;--pri:#8fb0ff;--bad:#ff8a7a;--ok:#5fd68f;--warn:#f0c36a}}
+  *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:980px;margin:0 auto;padding:16px}
+  h1{font-size:20px;margin:0} .top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
+  .stat,.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px}
+  .stat b{display:block;font-size:22px} .stat span{color:var(--mut);font-size:13px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 12px}
+  button.on,button.pri{background:var(--pri);color:#fff;border-color:var(--pri)} button.bad{background:var(--bad);color:#fff;border-color:var(--bad)}
+  button:disabled{opacity:.6;cursor:wait}
+  input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;width:100%}
+  table{width:100%;border-collapse:collapse;font-size:14px} th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top} th{color:var(--mut);font-weight:600}
+  .tbl{overflow-x:auto} .pill{display:inline-block;border-radius:99px;padding:1px 8px;font-size:12px;border:1px solid var(--line)}
+  .pill.bad{color:var(--bad);border-color:var(--bad)} .pill.warn{color:var(--warn);border-color:var(--warn)} .pill.ok{color:var(--ok);border-color:var(--ok)}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px} .row>input{flex:1;min-width:160px;width:auto}
+  .mut{color:var(--mut);font-size:13px} .msg{padding:8px 12px;border-radius:8px;margin-bottom:10px;background:var(--card);border:1px solid var(--line)}
+  .msg.err{color:var(--bad);border-color:var(--bad)} .msg.ok{color:var(--ok);border-color:var(--ok)}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:16px;z-index:5}
+  .modal .card{max-width:460px;width:100%;max-height:90vh;overflow:auto} .modal label{display:block;margin:10px 0 4px;font-size:13px;color:var(--mut)}
+  .nf{max-width:420px;margin:18vh auto;text-align:center} .nf h1{font-size:28px}
+</style>
+</head>
+<body>
+<!-- Shown to everyone who is not the admin; the real page is only drawn after the server says you are the admin. -->
+<div class="wrap nf" id="nf"><h1>Page not found</h1><p class="mut">The page you are looking for does not exist.</p><p><a href="/" style="color:var(--pri)">Back to StudyNest</a></p></div>
+<div class="wrap" id="app" hidden></div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id) }
+  var app = $('app'), nf = $('nf'), tab = 'users', usersQ = '', msgTimer
+  var DAY = 86400000
+
+  function el(tag, attrs, kids) {
+    var e = document.createElement(tag)
+    for (var k in (attrs || {})) { if (k === 'text') e.textContent = attrs[k]; else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), attrs[k]); else if (attrs[k] !== false && attrs[k] != null) e.setAttribute(k, attrs[k]) }
+    ;[].concat(kids || []).forEach(function (c) { if (c != null) e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c) })
+    return e
+  }
+  function api(action, data) {
+    return fetch('/api/admin', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ action: action }, data || {})) })
+      .then(function (r) { return r.json().catch(function () { return {} }).then(function (j) { return { status: r.status, ok: r.ok, data: j } }) })
+      .catch(function () { return { status: 0, ok: false, data: { error: 'No connection.' } } })
+  }
+  function fmt(d) { return d ? new Date(d).toLocaleString(undefined, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—' }
+  function say(text, kind) {
+    var m = $('msg'); if (!m) return
+    m.textContent = text; m.className = 'msg ' + (kind || ''); m.hidden = !text
+    clearTimeout(msgTimer); if (text) msgTimer = setTimeout(function () { m.hidden = true }, 6000)
+  }
+  function table(heads, rows) {
+    if (!rows.length) return el('p', { class: 'mut', text: 'Nothing here.' })
+    return el('div', { class: 'tbl' }, el('table', {}, [el('thead', {}, el('tr', {}, heads.map(function (h) { return el('th', { text: h }) }))), el('tbody', {}, rows)]))
+  }
+  function ruleName(r) { return { ai_burst: 'Too many AI requests', login_fail: 'Many failed logins', many_devices: 'Many devices', shared_device: 'Shared device' }[r] || r }
+
+  /* ---------- screens ---------- */
+  function showApp() { nf.hidden = true; app.hidden = false; document.title = 'Admin — StudyNest' }
+  function pinScreen(note) {
+    showApp(); app.textContent = ''
+    var pin = el('input', { type: 'password', id: 'pin', inputmode: 'numeric', autocomplete: 'off', placeholder: 'Admin PIN' })
+    var btn = el('button', { class: 'pri', text: 'Unlock' })
+    var m = el('p', { class: 'mut', text: note || '' })
+    function go() {
+      btn.disabled = true
+      api('unlock', { pin: pin.value }).then(function (r) { btn.disabled = false; if (r.ok) main(); else { m.textContent = (r.data && r.data.error) || 'Could not unlock.'; pin.value = ''; pin.focus() } })
+    }
+    btn.addEventListener('click', go); pin.addEventListener('keydown', function (e) { if (e.key === 'Enter') go() })
+    app.appendChild(el('div', { class: 'card', style: 'max-width:340px;margin:15vh auto' }, [el('h1', { text: '🔒 Admin' }), el('p', { class: 'mut', text: 'Enter your admin PIN.' }), pin, el('div', { style: 'margin-top:10px' }, btn), m]))
+    pin.focus()
+  }
+
+  function main() {
+    showApp(); app.textContent = ''
+    var tabs = [['users', 'Users'], ['flags', 'Flagged'], ['bans', 'Banned'], ['audit', 'Audit log']]
+    app.appendChild(el('div', { class: 'top' }, [el('h1', { text: 'StudyNest admin' }), el('button', { text: 'Lock', onclick: function () { api('lock').then(function () { location.reload() }) } })]))
+    app.appendChild(el('div', { class: 'stats', id: 'stats' }))
+    app.appendChild(el('div', { class: 'msg', id: 'msg', hidden: true }))
+    app.appendChild(el('div', { class: 'tabs', id: 'tabs' }, tabs.map(function (t) { return el('button', { 'data-t': t[0], class: t[0] === tab ? 'on' : '', text: t[1], onclick: function () { tab = t[0]; main() } }) })))
+    app.appendChild(el('div', { id: 'view' }))
+    api('stats').then(function (r) {
+      if (r.status === 401) return pinScreen('Session ended. Enter your PIN again.')
+      if (r.status === 404) return location.reload()
+      var d = r.data, s = $('stats'); if (!s) return
+      ;[['Users', d.users], ['Active bans', d.bans], ['Open flags', d.flags], ['Logins/visits (24h)', d.sessions]].forEach(function (x) { s.appendChild(el('div', { class: 'stat' }, [el('b', { text: String(x[1]) }), el('span', { text: x[0] })])) })
+    })
+    ;({ users: usersView, flags: flagsView, bans: bansView, audit: auditView })[tab]()
+  }
+  function failed(r) { if (r.status === 401 && r.data && r.data.needPin) { pinScreen('Session ended. Enter your PIN again.'); return true } if (r.status === 404) { location.reload(); return true } return false }
+
+  function usersView() {
+    var v = $('view'), q = el('input', { type: 'search', placeholder: 'Search name, email or user id', value: usersQ })
+    var go = el('button', { class: 'pri', text: 'Search', onclick: function () { usersQ = q.value; load() } })
+    q.addEventListener('keydown', function (e) { if (e.key === 'Enter') go.click() })
+    var out = el('div'); v.appendChild(el('div', { class: 'row' }, [q, go])); v.appendChild(out)
+    function load() {
+      out.textContent = 'Loading…'
+      api('users', { q: usersQ }).then(function (r) {
+        if (failed(r)) return; out.textContent = ''
+        if (!r.ok) return say(r.data.error || 'Failed.', 'err')
+        out.appendChild(table(['User', 'Last seen', 'Status', ''], r.data.users.map(function (u) {
+          return el('tr', {}, [
+            el('td', {}, [el('div', { text: u.display_name || '(no name)' }), el('div', { class: 'mut', text: u.email || u.user_id })]),
+            el('td', { text: fmt(u.last_seen) }),
+            el('td', {}, [u.banned ? el('span', { class: 'pill bad', text: 'Banned' }) : el('span', { class: 'pill ok', text: 'Active' }), Number(u.open_flags) ? el('span', { class: 'pill warn', style: 'margin-left:4px', text: Number(u.open_flags) + ' flag' }) : null]),
+            el('td', {}, el('button', { text: 'Open', onclick: function () { detail(u.user_id) } }))
+          ])
+        })))
+      })
+    }
+    load()
+  }
+
+  function modal(title, body) {
+    var m = el('div', { class: 'modal', onclick: function (e) { if (e.target === m) m.remove() } }, el('div', { class: 'card' }, [el('div', { class: 'top' }, [el('h1', { text: title }), el('button', { text: '✕', onclick: function () { m.remove() } })])].concat(body)))
+    document.body.appendChild(m); return m
+  }
+
+  function banForm(opts) { // opts: userId, email, flagId, label
+    var reason = el('textarea', { rows: 3, maxlength: 500, placeholder: 'Why is this user being banned?' })
+    var days = el('select', {}, [['0', 'Permanent'], ['1', '1 day'], ['7', '7 days'], ['30', '30 days']].map(function (o) { return el('option', { value: o[0], text: o[1] }) }))
+    var btn = el('button', { class: 'bad', text: 'Ban' })
+    var errP = el('p', { class: 'mut', style: 'color:var(--bad)' })
+    var m = modal('Ban ' + opts.label, [el('label', { text: 'Reason (the user will see it)' }), reason, el('label', { text: 'For how long' }), days, el('p', { class: 'mut', text: 'This blocks the account, the email and every device this account has used.' }), errP, btn])
+    btn.addEventListener('click', function () {
+      if (!reason.value.trim()) return reason.focus()
+      btn.disabled = true
+      api('ban', { userId: opts.userId || '', email: opts.email || '', flagId: opts.flagId || 0, reason: reason.value, days: Number(days.value) }).then(function (r) {
+        if (failed(r)) return; btn.disabled = false
+        if (!r.ok) { errP.textContent = r.data.error || 'Failed.'; return }
+        m.remove(); document.querySelectorAll('.modal').forEach(function (x) { x.remove() }); say('Banned.', 'ok'); main()
+      })
+    })
+  }
+
+  function detail(id) {
+    api('user_detail', { userId: id }).then(function (r) {
+      if (failed(r)) return; if (!r.ok) return say(r.data.error || 'Failed.', 'err')
+      var d = r.data, u = d.user, activeBan = d.bans.find(function (b) { return !b.lifted_at && (!b.expires_at || new Date(b.expires_at) > new Date()) })
+      var note = el('textarea', { rows: 2, maxlength: 1000, placeholder: 'Private note (only you see it)' }); note.value = u.notes || ''
+      var body = [
+        el('p', {}, [el('b', { text: u.display_name || '(no name)' }), ' ', el('span', { class: 'mut', text: u.email || '' })]),
+        el('p', { class: 'mut', text: 'First seen ' + fmt(u.first_seen) + ' · Last seen ' + fmt(u.last_seen) }),
+        activeBan ? el('p', { class: 'pill bad', text: 'Banned: ' + activeBan.reason }) : null,
+        el('div', { class: 'row' }, [activeBan ? el('button', { class: 'pri', text: 'Unban', onclick: function () { unban(activeBan.id) } }) : el('button', { class: 'bad', text: 'Ban this user', onclick: function () { banForm({ userId: u.user_id, label: u.display_name || u.email || 'user' }) } })]),
+        el('h3', { text: 'Devices' }),
+        table(['Device', 'Last seen', 'Accounts on it'], d.devices.map(function (x) { return el('tr', {}, [el('td', { text: x.device_id.slice(0, 8) + '…' }), el('td', { text: fmt(x.last_seen) }), el('td', { text: String(x.accounts) })]) })),
+        el('h3', { text: 'Flags' }),
+        table(['Rule', 'Detail', 'Status', 'When'], d.flags.map(function (f) { return el('tr', {}, [el('td', { text: ruleName(f.rule) }), el('td', { text: f.detail }), el('td', { text: f.status }), el('td', { text: fmt(f.created_at) })]) })),
+        el('h3', { text: 'Recent activity' }),
+        el('p', { class: 'mut', text: d.activity.length ? d.activity.map(function (a) { return a.type + ' (' + fmt(a.created_at) + ')' }).join(' · ') : 'None yet.' }),
+        el('h3', { text: 'Note' }), note,
+        el('div', { style: 'margin-top:8px' }, el('button', { text: 'Save note', onclick: function () { api('note', { userId: u.user_id, text: note.value }).then(function (x) { say(x.ok ? 'Note saved.' : 'Failed.', x.ok ? 'ok' : 'err') }) } }))
+      ]
+      modal('User', body)
+    })
+  }
+
+  function unban(banId) {
+    if (!confirm('Unban this user?')) return
+    api('unban', { banId: banId }).then(function (r) {
+      if (failed(r)) return
+      if (!r.ok) return say(r.data.error || 'Failed.', 'err')
+      document.querySelectorAll('.modal').forEach(function (x) { x.remove() })
+      say(r.data.warning || 'Unbanned.', r.data.warning ? 'err' : 'ok'); main()
+    })
+  }
+
+  function flagsView() {
+    var v = $('view'); v.textContent = 'Loading…'
+    api('flags', { status: 'open' }).then(function (r) {
+      if (failed(r)) return; v.textContent = ''
+      v.appendChild(el('p', { class: 'mut', text: 'The system only flags unusual activity. You decide whether to ban.' }))
+      v.appendChild(table(['Who', 'Why', 'When', ''], (r.data.flags || []).map(function (f) {
+        var who = f.display_name || f.email || f.user_id || '?'
+        return el('tr', {}, [
+          el('td', {}, [el('div', { text: who }), f.display_name && f.email ? el('div', { class: 'mut', text: f.email }) : null]),
+          el('td', {}, [el('b', { text: ruleName(f.rule) }), el('div', { class: 'mut', text: f.detail })]),
+          el('td', { text: fmt(f.created_at) }),
+          el('td', {}, [
+            f.user_id ? el('button', { text: 'Open', onclick: function () { detail(f.user_id) } }) : null, ' ',
+            el('button', { class: 'bad', text: 'Ban', onclick: function () { banForm({ userId: f.user_id || '', email: f.user_id ? '' : f.email, flagId: f.id, label: who }) } }), ' ',
+            el('button', { text: 'Dismiss', onclick: function () { api('flag_dismiss', { flagId: f.id }).then(function (x) { if (!failed(x)) main() }) } })
+          ])
+        ])
+      })))
+    })
+  }
+
+  function bansView() {
+    var v = $('view'); v.textContent = 'Loading…'
+    var all = false
+    api('bans', { filter: 'all' }).then(function (r) {
+      if (failed(r)) return; v.textContent = ''
+      var manual = el('div', { class: 'row' }, [el('input', { id: 'banEmail', type: 'email', placeholder: 'Ban an email directly (even before they sign up)' }), el('button', { class: 'bad', text: 'Ban email', onclick: function () { var e = $('banEmail').value.trim(); if (e) banForm({ email: e, label: e }) } })])
+      v.appendChild(manual)
+      v.appendChild(table(['Who', 'Reason', 'Banned', 'Ends', 'Status', ''], (r.data.bans || []).map(function (b) {
+        return el('tr', {}, [
+          el('td', {}, [el('div', { text: b.email || b.user_id || '?' }), el('div', { class: 'mut', text: '#' + b.id + ' · ' + b.devices + ' device(s) · by ' + b.banned_by })]),
+          el('td', { text: b.reason }), el('td', { text: fmt(b.created_at) }), el('td', { text: b.expires_at ? fmt(b.expires_at) : 'Never' }),
+          el('td', {}, el('span', { class: 'pill ' + (b.active ? 'bad' : ''), text: b.active ? 'Active' : (b.lifted_at ? 'Lifted' : 'Expired') })),
+          el('td', {}, b.active ? el('button', { class: 'pri', text: 'Unban', onclick: function () { unban(b.id) } }) : null)
+        ])
+      })))
+    })
+  }
+
+  function auditView() {
+    var v = $('view'); v.textContent = 'Loading…'
+    api('audit').then(function (r) {
+      if (failed(r)) return; v.textContent = ''
+      v.appendChild(table(['When', 'Admin', 'Action', 'Target', 'Detail'], (r.data.audit || []).map(function (a) {
+        return el('tr', {}, [el('td', { text: fmt(a.created_at) }), el('td', { text: a.admin_email }), el('td', { text: a.action }), el('td', { text: a.target || '' }), el('td', { text: a.detail || '' })])
+      })))
+    })
+  }
+
+  /* ---------- start ---------- */
+  api('status').then(function (r) {
+    if (r.status === 404 || !r.ok) return // not the admin: keep showing "Page not found"
+    if (!r.data.pinSet) { showApp(); app.textContent = 'ADMIN_PIN is not set in Netlify yet. Add it in Site configuration → Environment variables, redeploy, then reload.'; return }
+    if (r.data.unlocked) main(); else pinScreen()
+  })
+})()
+</script>
+</body>
+</html>

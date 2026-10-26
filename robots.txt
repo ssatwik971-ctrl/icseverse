@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /auth.html
+Disallow: /admin
+Disallow: /banned
 
 Sitemap: https://icseverse.netlify.app/sitemap.xml

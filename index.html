@@ -299,7 +299,7 @@
     let signedIn = false, syncing = null;
     function lessonToServer(x) { const meta = {}; META_KEYS.forEach(k => { if (x[k] !== undefined) meta[k] = x[k] }); return { id: x.id, subject: x.subject, topic: x.topic, mode: x.mode, text: x.text, offline: !!x.offline, created: x.created, model: x.model || '', fallback: !!x.fallback, requested: x.requested || '', meta } }
     async function lessonsApi(method, qs, body) {
-      const go = () => fetch(LESSONS_API + (qs || ''), { method, credentials: 'same-origin', headers: body ? { 'Content-Type': 'application/json' } : undefined, body: body ? JSON.stringify(body) : undefined });
+      const go = () => fetch(LESSONS_API + (qs || ''), { method, credentials: 'same-origin', headers: Object.assign({ 'X-Device-Id': (window.studynestDeviceId && window.studynestDeviceId()) || '' }, body ? { 'Content-Type': 'application/json' } : {}), body: body ? JSON.stringify(body) : undefined });
       let r = await go();
       // An expired login makes the server say 401: renew the session once and try again before giving up.
       if (r.status === 401 && typeof window.studynestRefreshSession === 'function' && await window.studynestRefreshSession()) r = await go();
@@ -473,6 +473,7 @@
     // Tries the chosen model; only a model-type/unknown failure falls back to Puter's default model.
     async function aiChat(prompt) {
       await waitForPuter(); const m = getModelConfig(selectedModel);
+      if (typeof window.studynestTrack === 'function') window.studynestTrack('ai_request');
       try { const r = await withTimeout(puter.ai.chat(prompt, { model: m.id }), m.timeout || AI_TIMEOUT); return { text: cleanAnswer(r), model: m.name, fallback: false } }
       catch (e) {
         const kind = classifyError(e); if (kind !== 'model' && kind !== 'unknown') throw e;

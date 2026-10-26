@@ -16,6 +16,7 @@
 
 import { getUser } from '@netlify/identity'
 import { getDatabase } from '@netlify/database'
+import { findBan, bannedBody, cleanEmail, cleanDevice } from '../lib/guard.mjs'
 
 export const config = { path: '/api/lessons' }
 
@@ -57,6 +58,9 @@ export default async (req) => {
     // Created here (not at the top of the file) so a missing database gives the friendly 500 below instead of crashing the function.
     const db = getDatabase() // Netlify Database connects by itself; no env variable needed
     const sql = async (strings, ...vals) => { const r = await db.sql(strings, ...vals); return Array.isArray(r) ? r : (r && r.rows) || [] }
+    // Banned accounts, emails and devices get nothing from the server.
+    const ban = await findBan(sql, { userId, email: cleanEmail(user.email), deviceId: cleanDevice(req.headers.get('x-device-id')) })
+    if (ban) return json(403, bannedBody(ban))
     // Remember who this user is (name + email) next to their id, so you can tell users apart in the database.
     // A failure here must never block the lessons, so it is wrapped on its own.
     try {

@@ -24,6 +24,16 @@
   to = "/auth.html"
   status = 200
 
+# Admin page (the page itself shows "Page not found" to anyone who is not the admin) and the banned page.
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+[[redirects]]
+  from = "/banned"
+  to = "/banned.html"
+  status = 200
+
 # The service worker must always be revalidated so updates reach students quickly.
 [[headers]]
   for = "/sw.js"
