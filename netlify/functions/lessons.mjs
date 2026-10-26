@@ -15,7 +15,7 @@
 // The files in netlify/database/migrations/ (001, 002) are applied by Netlify during each production deploy.
 
 import { getUser } from '@netlify/identity'
-import { neon } from '@netlify/neon'
+import { getDatabase } from '@netlify/database'
 
 export const config = { path: '/api/lessons' }
 
@@ -55,7 +55,8 @@ export default async (req) => {
 
   try {
     // Created here (not at the top of the file) so a missing database gives the friendly 500 below instead of crashing the function.
-    const sql = neon() // reads NETLIFY_DATABASE_URL automatically
+    const db = getDatabase() // Netlify Database connects by itself; no env variable needed
+    const sql = async (strings, ...vals) => { const r = await db.sql(strings, ...vals); return Array.isArray(r) ? r : (r && r.rows) || [] }
     if (req.method === 'GET') {
       const rows = await sql`
         SELECT id, subject, topic, mode, text, offline, model, fallback, requested_model, meta,
