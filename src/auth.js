@@ -388,12 +388,18 @@ async function renderAuthPage() {
 
 /* ---------- Boot ---------- */
 async function boot() {
+  // A reset link opens on any page. Move it, token included, to the reset page first,
+  // so the same page that reads the token also shows the new-password form (no reload in between).
+  if (/recovery_token=/.test(location.hash) && location.pathname.replace(/\/+$/, '') !== '/reset-password') {
+    return location.replace('/reset-password' + location.hash)
+  }
+  let recovered = null
   const hadCallback = CALLBACK_RE.test(location.hash)
   if (hadCallback) {
     try {
       const result = await handleAuthCallback()
       history.replaceState(null, '', location.pathname + location.search)
-      if (result?.type === 'recovery') return location.replace('/reset-password')
+      if (result?.type === 'recovery') recovered = result.user || null
       if (result?.type === 'confirmation' || result?.type === 'email_change') {
         currentUser = result.user || null
         toast('Email confirmed. Welcome to StudyNest!')
@@ -405,6 +411,7 @@ async function boot() {
     }
   }
   try { currentUser = await getUser() } catch { currentUser = null }
+  if (!currentUser && recovered) currentUser = recovered
   // The study page needs an account: logged-out visitors go to the login page first.
   if (document.body.dataset.page === 'app') {
     if (!currentUser) return location.replace('/login')

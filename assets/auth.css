@@ -74,3 +74,15 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #ffb7
   .user-name{display:none}.user-btn{padding:4px 8px 4px 4px}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* Phone fixes */
+html,body{overflow-x:hidden}
+@media(max-width:720px){
+.btn{min-height:44px;white-space:normal;text-align:center;line-height:1.25;font-size:13px}
+.btn-sm{min-height:40px;font-size:12px;padding:8px 11px}
+.auth-card{padding:20px 16px}
+.acct-actions{flex-direction:column}.acct-actions .btn{width:100%}
+.top-actions{flex-wrap:nowrap;min-width:0}
+input,select,textarea{font-size:16px}
+.pw-toggle{min-height:36px;min-width:52px}
+}
+@media(max-width:400px){.brand-mark{height:36px;width:36px;font-size:18px}.top-actions .btn-light.btn-sm{padding:8px}}
