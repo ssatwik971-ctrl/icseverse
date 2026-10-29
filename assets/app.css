@@ -70,3 +70,53 @@ html,body{overflow-x:hidden}
 .action-row,.lesson-actions{grid-template-columns:1fr}
 .brand-mark{height:36px;width:36px;font-size:18px}
 }
+
+/* ---------- Added: lesson text size, streak and goal, progress bars, weak topics ---------- */
+@media screen{.prose{font-size:calc(14px * var(--fs,1))}}
+.hero-stat.goal-stat{font:inherit;font-size:12px;cursor:pointer;color:#e1e7f4}
+.hero-stat.goal-stat:hover{background:#ffffff22}
+.mini-bar{display:block;height:4px;border-radius:99px;background:#e9edf4;margin-top:5px;overflow:hidden}
+.mini-bar i{display:block;height:100%;background:var(--green);border-radius:99px}
+.progress-line{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:11px;color:var(--muted);flex-wrap:wrap}
+.progress-line .bar{flex:0 1 220px;width:220px;height:7px;border-radius:99px;background:#e9edf4;overflow:hidden}
+.progress-line .bar i{display:block;height:100%;background:var(--green);border-radius:99px}
+.chapter-item{display:flex;gap:6px;align-items:stretch;min-width:0}
+.chapter-item .chapter-card{flex:1;min-width:0}
+.chapter-tick{flex:0 0 38px;border:1px solid var(--line);background:#fff;color:#b4bdcc;border-radius:12px;font-size:15px;font-weight:800}
+.chapter-tick:hover{border-color:#9bd3c2;color:var(--green)}
+.chapter-tick.on{background:#dff3ec;border-color:#bfe5d8;color:var(--green)}
+.weak-card{border-left-color:#e0556b;border-color:#f6cdd4}
+.weak-card .saved-main{display:grid;gap:4px}
+.weak-item{display:block;text-align:left;border:0;background:none;padding:2px 0;color:inherit;font-size:12px}
+.weak-item:hover strong{text-decoration:underline}
+@media(max-width:720px){.chapter-tick{flex-basis:44px}.topbar .top-actions #themeBtn,.topbar .top-actions #fontBtn{padding:8px 9px}}
+
+/* ---------- Added: dark mode (the account pages stay light) ---------- */
+html[data-theme="dark"]{color-scheme:dark;--paper:#0f1729;--ink:#e6ecf8;--muted:#a3b0c7;--line:#2a3750;--orange2:#3a2a1e;--shadow:0 18px 50px rgba(0,0,0,.35)}
+html[data-theme="dark"] body{background:var(--paper);color:var(--ink)}
+html[data-theme="dark"] .sidebar,html[data-theme="dark"] .panel,html[data-theme="dark"] .resume-card,html[data-theme="dark"] .saved-card,html[data-theme="dark"] .chapter-card,html[data-theme="dark"] .reference-card,html[data-theme="dark"] .chapter-tick,html[data-theme="dark"] .suggestion,html[data-theme="dark"] .kbd{background:#16213a;border-color:var(--line);color:var(--ink)}
+html[data-theme="dark"] .side-footer,html[data-theme="dark"] .side-search,html[data-theme="dark"] .chapter-filter,html[data-theme="dark"] .count-badge,html[data-theme="dark"] .tag,html[data-theme="dark"] .chapter-num,html[data-theme="dark"] .subject-icon{background:#1d2a47;border-color:var(--line);color:#c9d4ea}
+html[data-theme="dark"] .field input,html[data-theme="dark"] .field select,html[data-theme="dark"] .field textarea{background:#101a30;border-color:#2f3f5f;color:var(--ink)}
+html[data-theme="dark"] .field input:focus,html[data-theme="dark"] .field select:focus,html[data-theme="dark"] .field textarea:focus{background:#142040}
+html[data-theme="dark"] .field label,html[data-theme="dark"] .tiny-label,html[data-theme="dark"] .side-heading,html[data-theme="dark"] .subject-count,html[data-theme="dark"] .status-line,html[data-theme="dark"] .footer-note{color:var(--muted)}
+html[data-theme="dark"] .subject-button{color:#b8c4dc}
+html[data-theme="dark"] .subject-button:hover{background:#1d2a47}
+html[data-theme="dark"] .subject-button.active{background:#3a2a1e;border-color:#5b3b22;color:#ffc79c}
+html[data-theme="dark"] .btn-light,html[data-theme="dark"] .btn-outline{background:#1d2a47;border-color:var(--line);color:#d5def0}
+html[data-theme="dark"] .btn-dark{background:#2b3d63}
+html[data-theme="dark"] .chapter-card strong,html[data-theme="dark"] .reference-card strong,html[data-theme="dark"] .saved-main strong,html[data-theme="dark"] .empty-state h3,html[data-theme="dark"] .side-footer strong{color:#e6ecf8}
+html[data-theme="dark"] .chapter-card:hover,html[data-theme="dark"] .reference-card:hover,html[data-theme="dark"] .suggestion:hover{background:#1d2a47}
+html[data-theme="dark"] .chapter-card.studied .chapter-num,html[data-theme="dark"] .chapter-tick.on{background:#173d33;border-color:#24604f;color:#6fdcb6}
+html[data-theme="dark"] .prose{color:#d3dcef}
+html[data-theme="dark"] .prose h1,html[data-theme="dark"] .prose h2,html[data-theme="dark"] .prose h3,html[data-theme="dark"] .prose strong,html[data-theme="dark"] .lesson-title{color:#f1f5fd}
+html[data-theme="dark"] .prose code{background:#1d2a47}
+html[data-theme="dark"] .prose blockquote{background:#2a2230}
+html[data-theme="dark"] .prose th{background:#1d2a47}
+html[data-theme="dark"] .prose th,html[data-theme="dark"] .prose td{border-color:var(--line)}
+html[data-theme="dark"] .lesson-body{border-top-color:var(--line)}
+html[data-theme="dark"] .callout{background:#2a2230;border-color:#4a3340;color:#e8c9b3}
+html[data-theme="dark"] .mini-bar,html[data-theme="dark"] .progress-line .bar{background:#24324f}
+html[data-theme="dark"] .tab{color:var(--muted)}
+html[data-theme="dark"] .tab.active{color:#ffc79c}
+html[data-theme="dark"] .toast{background:#e6ecf8;color:#0f1729}
+@media print{html[data-theme="dark"] body{background:#fff;color:#000}html[data-theme="dark"] .prose,html[data-theme="dark"] .prose *{color:#000!important}}

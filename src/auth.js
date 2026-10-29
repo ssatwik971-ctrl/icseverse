@@ -54,11 +54,38 @@ async function sessionCheck() {
   if (g?.banned) goBanned(g)
 }
 
+/* ---------- safe user lookup ----------
+   getUser() asks Netlify "who is this?" (/.netlify/identity/user). With an old or broken login it fails (HTTP 400),
+   and the login library then fires an auth event, which used to trigger another getUser() call: a loop of 400s.
+   loadUser() fixes that: one request at a time, and after a failure it waits 30 s before asking again. */
+let userInflight = null
+let userFailedAt = 0
+let userLookupThrew = false
+const USER_RETRY_MS = 30000
+async function loadUser() {
+  if (userInflight) return userInflight
+  if (userFailedAt && Date.now() - userFailedAt < USER_RETRY_MS) return null
+  userInflight = (async () => {
+    try {
+      const u = await getUser()
+      userFailedAt = u ? 0 : Date.now()
+      return u || null
+    } catch {
+      userFailedAt = Date.now()
+      userLookupThrew = true
+      return null
+    } finally {
+      setTimeout(() => { userInflight = null }, 0)
+    }
+  })()
+  return userInflight
+}
+
 // Lets the study page renew an expired login before it retries a saved-lessons request.
 window.studynestRefreshSession = async () => {
   try {
     if (typeof Identity.refreshSession === 'function') { await Identity.refreshSession(); return true }
-    return !!(await getUser())
+    return !!(await loadUser())
   } catch { return false }
 }
 
@@ -410,7 +437,9 @@ async function boot() {
       if (location.pathname !== '/forgot-password') return location.replace('/forgot-password?expired=1')
     }
   }
-  try { currentUser = await getUser() } catch { currentUser = null }
+  currentUser = await loadUser()
+  // A saved login that the server rejects is cleared once, so the browser stops sending it.
+  if (!currentUser && !recovered && userLookupThrew) { try { await logout() } catch { /* already signed out */ } }
   if (!currentUser && recovered) currentUser = recovered
   // The study page needs an account: logged-out visitors go to the login page first.
   if (document.body.dataset.page === 'app') {
@@ -424,7 +453,8 @@ async function boot() {
   // Defer so listeners registered by the page (index.html) are in place before the first event.
   setTimeout(() => announceAuth('init'), 0)
   onAuthChange(async (event, user) => {
-    currentUser = user ?? (await getUser().catch(() => null))
+    // Do not call getUser() again after a logout or a failed lookup: that is what caused the loop of 400 errors.
+    currentUser = user ?? (event === 'logout' ? null : await loadUser())
     renderHeader()
     announceAuth(currentUser ? (event === 'login' ? 'login' : 'update') : 'logout')
     if (!currentUser && (location.pathname === '/account' || document.body.dataset.page === 'app')) location.replace('/login')

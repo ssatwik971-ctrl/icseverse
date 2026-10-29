@@ -4,7 +4,8 @@
   "private": true,
   "description": "StudyNest static site, Netlify Identity account pages and lessons function",
   "scripts": {
-    "build": "node build.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "build": "node --test tests/*.test.mjs && node build.mjs"
   },
   "dependencies": {
     "@netlify/identity": "^2.0.0",

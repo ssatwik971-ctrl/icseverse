@@ -31,7 +31,7 @@ for (const e of await readdir('.', { withFileTypes: true })) {
 // the service worker must sit at the site root to control the whole origin,
 // and the stylesheets are referenced as /assets/*.css by the pages.
 if (existsSync('sw.js')) await copyFile('sw.js', 'dist/sw.js')
-for (const f of ['assets/app.css', 'auth.css', 'assets/auth.css']) {
+for (const f of ['assets/app.css', 'assets/app.js', 'auth.css', 'assets/auth.css']) {
   if (existsSync(f)) await copyFile(f, `dist/assets/${f.split('/').pop()}`)
 }
 if (!existsSync('dist/assets/auth.css')) console.warn('Warning: auth.css not found; index.html and auth.html link to /assets/auth.css')

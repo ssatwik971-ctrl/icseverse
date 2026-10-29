@@ -17,6 +17,7 @@
 import { getUser } from '@netlify/identity'
 import { getDatabase } from '@netlify/database'
 import { findBan, bannedBody, cleanEmail, cleanDevice } from '../lib/guard.mjs'
+import { rateLimited } from '../lib/rate.mjs'
 
 export const config = { path: '/api/lessons' }
 
@@ -53,6 +54,8 @@ export default async (req) => {
   try { user = await getUser() } catch { user = null }
   if (!user) return json(401, { error: 'Not signed in. Please log in and try again.' })
   const userId = user.id
+  const wait = rateLimited(userId)
+  if (wait) return new Response(JSON.stringify({ error: 'Too many requests. Please wait a moment and try again.' }), { status: 429, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'Retry-After': String(wait) } })
 
   try {
     // Created here (not at the top of the file) so a missing database gives the friendly 500 below instead of crashing the function.

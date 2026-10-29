@@ -39,3 +39,15 @@
   for = "/sw.js"
   [headers.values]
     Cache-Control = "no-cache"
+
+# Safety headers for every page. The Content-Security-Policy only blocks things that are never needed
+# (framing the site, plugins, a changed <base>). It does not limit scripts, so Puter AI and KaTeX keep working.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    Strict-Transport-Security = "max-age=31536000"
+    Content-Security-Policy = "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
