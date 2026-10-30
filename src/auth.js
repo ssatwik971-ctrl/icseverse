@@ -186,7 +186,7 @@ async function doLogout() {
   currentUser = null
   renderHeader()
   announceAuth('logout')
-  if (location.pathname === '/account' || document.body.dataset.page === 'app') location.assign('/login')
+  if (location.pathname === '/account') location.assign('/login')
   else toast('You have been logged out.')
 }
 
@@ -441,11 +441,8 @@ async function boot() {
   // A saved login that the server rejects is cleared once, so the browser stops sending it.
   if (!currentUser && !recovered && userLookupThrew) { try { await logout() } catch { /* already signed out */ } }
   if (!currentUser && recovered) currentUser = recovered
-  // The study page needs an account: logged-out visitors go to the login page first.
-  if (document.body.dataset.page === 'app') {
-    if (!currentUser) return location.replace('/login')
-    document.body.classList.add('auth-ok')
-  }
+  // The study page is open to everyone. An account is optional and only adds saving lessons across devices.
+  if (document.body.dataset.page === 'app') document.body.classList.add('auth-ok')
   renderHeader()
   sessionCheck()
   setInterval(sessionCheck, 90000)
@@ -457,7 +454,7 @@ async function boot() {
     currentUser = user ?? (event === 'logout' ? null : await loadUser())
     renderHeader()
     announceAuth(currentUser ? (event === 'login' ? 'login' : 'update') : 'logout')
-    if (!currentUser && (location.pathname === '/account' || document.body.dataset.page === 'app')) location.replace('/login')
+    if (!currentUser && location.pathname === '/account') location.replace('/login')
   })
   if (document.body.dataset.page === 'auth') await renderAuthPage()
 }
