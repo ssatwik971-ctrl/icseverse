@@ -117,6 +117,13 @@
                     value="hinglish"><span>Hinglish</span></label><label><input type="radio" name="lang"
                     value="hindi"><span>हिन्दी</span></label></div>
             </div>
+            <div class="field"><label id="levelLabel">Teaching level</label>
+              <div class="seg" role="radiogroup" aria-labelledby="levelLabel"><label><input type="radio" name="level"
+                    value="beginner"><span>Beginner</span></label><label><input type="radio" name="level"
+                    value="standard" checked><span>Standard</span></label><label><input type="radio" name="level"
+                    value="detailed"><span>Detailed</span></label><label><input type="radio" name="level"
+                    value="exam"><span>Exam revision</span></label></div>
+            </div>
           </div>
           <div class="suggestions"><button type="button" class="suggestion" aria-pressed="false"
               data-topic="Explain like I am a beginner">Explain from zero</button><button type="button"
@@ -148,7 +155,7 @@
             <div class="lesson-actions hidden" id="lessonActions"><button class="btn btn-light btn-sm"
                 id="saveLessonBtn" aria-pressed="false">♡ Save</button><button class="btn btn-light btn-sm"
                 id="copyLessonBtn">⧉ Copy</button><button class="btn btn-light btn-sm" id="printLessonBtn" title="Print, or choose Save as PDF in the print window">⎙
-                Print / PDF</button><button class="btn btn-outline btn-sm" id="newLessonBtn"
+                Print / PDF</button><button class="btn btn-light btn-sm" id="toCardsBtn" type="button" title="Make flashcards from this lesson">▧ Flashcards</button><button class="btn btn-light btn-sm" id="toQuizBtn" type="button" title="Make a quiz from this lesson">✎ Quiz</button><button class="btn btn-outline btn-sm" id="newLessonBtn"
                 title="Clear this lesson and start a new one">✕ New</button></div>
           </div>
           <div class="lesson-body" id="lessonBody" aria-live="polite">
@@ -169,7 +176,7 @@
           </div>
           <div class="refine-row hidden" id="refineRow" style="display:block"><span class="tiny-label">ASK A FOLLOW-UP</span>
             <textarea id="followInput" rows="2" aria-label="Ask a follow-up question about this lesson" placeholder="Type your question about this lesson…" style="width:100%;margin-top:6px"></textarea>
-            <div class="action-row" style="margin-top:8px"><button class="btn btn-primary btn-sm" id="followBtn">Ask</button></div>
+            <div class="action-row" style="margin-top:8px"><button class="btn btn-primary btn-sm" id="followBtn">Ask</button><button class="btn btn-light btn-sm" type="button" data-quick="Explain this again in a simpler way, for a beginner.">Simpler</button><button class="btn btn-light btn-sm" type="button" data-quick="Give me one more worked example, different from the ones above.">Another example</button><button class="btn btn-light btn-sm" type="button" data-quick="Summarise this lesson in 5 short bullet points.">Summary</button><button class="btn btn-light btn-sm" type="button" data-quick="Write a full-mark ICSE exam answer (about 5 marks) for the main idea of this lesson.">Exam answer</button></div>
             <div class="quiz-feedback hidden" id="followAnswer" aria-live="polite"></div>
           </div>
           <div class="reference-wrap hidden" id="referencesWrap">

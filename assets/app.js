@@ -62,7 +62,7 @@ const OFFLINE = {
 
 const $ = id => document.getElementById(id);
 const DAY = 86400000, TOAST_MS = 3200, AI_TIMEOUT = 180000, SOL_TIMEOUT = 240000, WIKI_TIMEOUT = 5000;
-const STORAGE = 'studynest_lessons_v1', STORAGE_MODEL = 'studynest_preferred_model', LS_LANG = 'studynest_language_v1', LS_SEL = 'studynest_selection_v1', LS_PROG = 'studynest_progress_v1', LS_CACHE = 'studynest_cache_v1', LS_STREAK = 'studynest_streak_v1', LS_SCORES = 'studynest_scores_v1', LS_THEME = 'studynest_theme_v1', LS_FONT = 'studynest_fontscale_v1', LS_HINT = 'studynest_puterhint_v1';
+const STORAGE = 'studynest_lessons_v1', STORAGE_MODEL = 'studynest_preferred_model', LS_LANG = 'studynest_language_v1', LS_SEL = 'studynest_selection_v1', LS_PROG = 'studynest_progress_v1', LS_CACHE = 'studynest_cache_v1', LS_STREAK = 'studynest_streak_v1', LS_SCORES = 'studynest_scores_v1', LS_THEME = 'studynest_theme_v1', LS_FONT = 'studynest_fontscale_v1', LS_HINT = 'studynest_puterhint_v1', LS_LEVEL = 'studynest_level_v1', CACHE_TTL = 30 * 86400000, PROMPT_VERSION = 'p3';
 const MODELS = {
   deepseek: { name: 'DeepSeek V4.1 Flash', id: 'deepseek/deepseek-v4.1-flash', note: 'Everyday use (Recommended)', costLabel: 'Normal', costValue: '~3.84 credits / 1K tokens', timeout: 180000 },
   nano: { name: 'GPT 5.4 Nano', id: 'openai/gpt-5.4-nano', note: 'Quick & simple answers', costLabel: 'Low', costValue: '~4.00 credits / 1K tokens', timeout: 120000 },
@@ -74,8 +74,15 @@ const LANG_RULES = {
   hinglish: 'LANGUAGE: Write in simple Hinglish: Hindi written in Roman letters mixed naturally with English, the way a friendly Indian teacher talks in class. Keep scientific/technical terms, formulas and headings in English.',
   hindi: 'LANGUAGE: Write in simple Hindi using Devanagari script. Keep scientific/technical terms in English in brackets the first time they appear, and keep formulas unchanged.'
 };
+const LEVEL_RULES = {
+  beginner: 'TEACHING LEVEL: Beginner. Assume the student has never met this topic. Use very short sentences, everyday words and small steps. Explain every new word the first time it appears. Use a simple real-life example before any formula.',
+  standard: 'TEACHING LEVEL: Standard. Explain at the normal ICSE Class 9 level.',
+  detailed: 'TEACHING LEVEL: Detailed. Go deeper into the concept: explain why it works, link it to related ideas, and include a harder worked example. Keep the language simple.',
+  exam: 'TEACHING LEVEL: Exam revision. Be concise and exam-focused: key definitions, formulas, points that earn marks, common mistakes, and keywords to write in answers. No long stories.'
+};
+const LEVEL_LABEL = { beginner: 'Beginner', standard: 'Standard', detailed: 'Detailed', exam: 'Exam revision' };
 const MODE_LABEL = { explain: 'Explanation', notes: 'Detailed notes', quiz: 'Quiz', flashcards: 'Flashcards' };
-let selectedSubject = 'bio', selectedModel = 'deepseek', selectedLang = 'english', currentLesson = null, currentRefs = [], busy = false, grading = false, EMPTY_HTML = '';
+let selectedSubject = 'bio', selectedModel = 'deepseek', selectedLang = 'english', selectedLevel = 'standard', currentLesson = null, currentRefs = [], busy = false, grading = false, EMPTY_HTML = '';
 
 /* ---------- storage helpers ---------- */
 function lsGet(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v) } catch { return d } }
@@ -86,7 +93,7 @@ function getSaved() { return lsGet(STORAGE, []) }
 function setSaved(a) { if (!lsSet(STORAGE, a)) showToast('Could not save: this browser blocked storage.'); updateSavedCount(); renderResume() }
 /* ---------- account sync: saved lessons follow the signed-in account (Netlify DB via /api/lessons) ----------
    Not signed in = browser-only, exactly as before. Signed in = this device's list is merged with the account's list. */
-const LS_SYNCED = 'studynest_synced_user_v1', LS_PENDING = 'studynest_pending_delete_v1', LESSONS_API = '/api/lessons', META_KEYS = ['subjectId', 'chapter', 'baseExtra', 'refine', 'lang', 'stage', 'reviewAt'];
+const LS_SYNCED = 'studynest_synced_user_v1', LS_PENDING = 'studynest_pending_delete_v1', LESSONS_API = '/api/lessons', META_KEYS = ['subjectId', 'chapter', 'baseExtra', 'refine', 'lang', 'level', 'stage', 'reviewAt'];
 let signedIn = false, syncing = null;
 function lessonToServer(x) { const meta = {}; META_KEYS.forEach(k => { if (x[k] !== undefined) meta[k] = x[k] }); return { id: x.id, subject: x.subject, topic: x.topic, mode: x.mode, text: x.text, offline: !!x.offline, created: x.created, model: x.model || '', fallback: !!x.fallback, requested: x.requested || '', meta } }
 async function lessonsApi(method, qs, body) {
@@ -191,6 +198,8 @@ function init() {
   // restore preferences
   const m = rawGet(STORAGE_MODEL); if (m && MODELS[m]) selectedModel = m;
   const lg = rawGet(LS_LANG); if (lg && LANG_RULES[lg]) selectedLang = lg;
+  const lv = rawGet(LS_LEVEL); if (lv && LEVEL_RULES[lv]) selectedLevel = lv;
+  document.querySelectorAll('input[name=level]').forEach(r => { r.checked = r.value === selectedLevel; r.addEventListener('change', () => { if (r.checked) { selectedLevel = r.value; rawSet(LS_LEVEL, selectedLevel) } }) });
   const sel = lsGet(LS_SEL, null); if (sel && DB.some(s => s.id === sel.subject)) selectedSubject = sel.subject;
   $('modelSelect').value = selectedModel; updateModelHint();
   document.querySelectorAll('input[name=lang]').forEach(r => { r.checked = r.value === selectedLang });
@@ -214,6 +223,8 @@ function init() {
   $('saveLessonBtn').addEventListener('click', toggleSave); $('copyLessonBtn').addEventListener('click', copyCurrent);
   $('printLessonBtn').addEventListener('click', () => window.print()); $('newLessonBtn').addEventListener('click', newLesson);
   $('gradeBtn').addEventListener('click', gradeQuiz);
+  document.querySelectorAll('[data-quick]').forEach(b => b.addEventListener('click', () => { $('followInput').value = b.dataset.quick; askFollowUp() }));
+  $('toCardsBtn').addEventListener('click', () => deriveFromLesson('flashcards')); $('toQuizBtn').addEventListener('click', () => deriveFromLesson('quiz'));
   $('followBtn').addEventListener('click', askFollowUp); $('followInput').addEventListener('keydown', e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) askFollowUp() });
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => { }));
 }
@@ -233,7 +244,7 @@ function syncChips() { const p = extraParts(); document.querySelectorAll('[data-
 /* ---------- prompts ---------- */
 const MATH_RULE = 'MATHS FORMAT: Write every formula, fraction, exponent, root and logarithm in LaTeX, using $...$ for inline maths and $$...$$ for a displayed equation (for example $\\frac{a}{b}$, $x^2$, $\\sqrt{2}$, $\\log_{10} 100$). Never write maths as plain text like sqrt(2) or x^2. Write money as "Rs." and never use the $ sign for currency.';
 const DIAGRAM_RULE = 'DIAGRAMS: If a simple labelled diagram would clearly help (for example parts of a flower or cell, a ray diagram, a circuit, a geometry figure, contour lines), include ONE diagram as inline SVG inside a fenced code block whose language is svg. Start with <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">, use only basic shapes (line, rect, circle, ellipse, polygon, polyline, path, text), put labels in <text> at font-size 12 to 14, and use no scripts, images, links or styles. Skip the diagram if it would not genuinely help.';
-function composePrompt(mode, subject, topic, chapter, extra, refs, lang) { let action = { explain: 'Teach me the topic', notes: 'Create comprehensive revision notes', quiz: 'Create a challenging but fair quiz', flashcards: 'Create useful flashcards' }[mode] || 'Teach me the topic'; let modeRules = { explain: 'Use a patient teacher style. Begin with the simplest explanation, then build up. Include definitions, a real-life analogy, examples, important terms, mistakes to avoid, an exam-focused section and three takeaways. Do NOT add any quiz, test or practice questions; the learner can ask follow-up questions instead.', notes: 'Create thorough, well-organised Class 9 revision notes. Include core concepts, definitions, classifications, formulas or dates where relevant, examples, common mistakes, and a quick final summary. Do NOT add any quiz, test or practice questions. Do not invent exact wording from any textbook.', quiz: 'Make 10 questions from this topic, suitable for a serious ICSE Class 9 student. Mix direct understanding, reasoning, application, and calculations where relevant. Use MCQs where suitable, with the options A to D each on its own line. You MUST number the questions sequentially from 1 to 10 (1. for the first, 2. for the second, up to 10.). Do NOT show answers or explanations. Finish by telling me to type my answers (for example "1-B, 2-D, 3-A" or short written answers) into the answer box under the quiz so they can be checked.', flashcards: 'Create 12 concise flashcards in a numbered list. Each card must have a clear question followed by a short answer. Cover definitions, key facts, application, and common confusions.' }[mode]; let context = refs && refs.length ? refs.map((r, i) => `${i + 1}. ${r.title}: ${r.extract}`).join('\n') : 'No web excerpts were available for this request.'; return `You are a warm, patient, highly accurate ICSE Class 9 (India) teacher. Explain in simple language appropriate for a young teenager. Do not overwhelm the learner with jargon; explain every difficult word when first used. Use clear headings, concise paragraphs, bullets, examples, and correct formulas/units. Do not pretend you saw textbook pages that were not supplied.\n\nTASK: ${action}.\nSUBJECT: ${subject}\nCHAPTER FROM THE USER'S CONTENTS INDEX: ${chapter || 'Not specified'}\nTOPIC / QUESTION: ${topic}\nLEARNER REQUEST: ${extra || 'No extra preference.'}\n\nSTYLE RULES: ${modeRules}\n${LANG_RULES[lang] || LANG_RULES.english}\n${MATH_RULE}\n${mode === 'quiz' ? '' : DIAGRAM_RULE + '\n'}\nSOURCE NOTE: A chapter title/page index was transcribed from the user's contents-page PDF; that file did not contain full chapter text. The following, if present, are public web reference snippets, not the user's textbook. Clearly avoid textbook-specific claims that are not supported.\n\nPUBLIC WEB REFERENCE SNIPPETS:\n${context}\n\nIf sources disagree or are incomplete, say what is uncertain instead of guessing. For law/history/science, keep claims age-appropriate and distinguish established facts from simplifications. Reply in the most useful format for the requested task.` }
+function composePrompt(mode, subject, topic, chapter, extra, refs, lang, level) { let action = { explain: 'Teach me the topic', notes: 'Create comprehensive revision notes', quiz: 'Create a challenging but fair quiz', flashcards: 'Create useful flashcards' }[mode] || 'Teach me the topic'; let modeRules = { explain: 'Use a patient teacher style. Begin with the simplest explanation, then build up. Include definitions, a real-life analogy, examples, important terms, mistakes to avoid, an exam-focused section and three takeaways. Do NOT add any quiz, test or practice questions; the learner can ask follow-up questions instead.', notes: 'Create thorough, well-organised Class 9 revision notes. Include core concepts, definitions, classifications, formulas or dates where relevant, examples, common mistakes, and a quick final summary. Do NOT add any quiz, test or practice questions. Do not invent exact wording from any textbook.', quiz: 'Make 10 questions from this topic, suitable for a serious ICSE Class 9 student. Mix direct understanding, reasoning, application, and calculations where relevant. Use MCQs where suitable, with the options A to D each on its own line. You MUST number the questions sequentially from 1 to 10 (1. for the first, 2. for the second, up to 10.). Do NOT show answers or explanations. Finish by telling me to type my answers (for example "1-B, 2-D, 3-A" or short written answers) into the answer box under the quiz so they can be checked.', flashcards: 'Create 12 concise flashcards in a numbered list. Each card must have a clear question followed by a short answer. Cover definitions, key facts, application, and common confusions.' }[mode]; let context = refs && refs.length ? refs.map((r, i) => `${i + 1}. ${r.title}: ${r.extract}`).join('\n') : 'No web excerpts were available for this request.'; return `You are a warm, patient, highly accurate ICSE Class 9 (India) teacher. Explain in simple language appropriate for a young teenager. Do not overwhelm the learner with jargon; explain every difficult word when first used. Use clear headings, concise paragraphs, bullets, examples, and correct formulas/units. Do not pretend you saw textbook pages that were not supplied.\n\nTASK: ${action}.\nSUBJECT: ${subject}\nCHAPTER FROM THE USER'S CONTENTS INDEX: ${chapter || 'Not specified'}\nTOPIC / QUESTION: ${topic}\nLEARNER REQUEST: ${extra || 'No extra preference.'}\n\nSTYLE RULES: ${modeRules}\n${LANG_RULES[lang] || LANG_RULES.english}\n${LEVEL_RULES[level] || LEVEL_RULES.standard}\n${MATH_RULE}\n${mode === 'quiz' ? '' : DIAGRAM_RULE + '\n'}\nSOURCE NOTE: A chapter title/page index was transcribed from the user's contents-page PDF; that file did not contain full chapter text. The following, if present, are public web reference snippets, not the user's textbook. Clearly avoid textbook-specific claims that are not supported.\n\nPUBLIC WEB REFERENCE SNIPPETS:\n${context}\n\nIf sources disagree or are incomplete, say what is uncertain instead of guessing. For law/history/science, keep claims age-appropriate and distinguish established facts from simplifications. Reply in the most useful format for the requested task.` }
 function composeQuizHelpPrompt(quiz, question, lang) { return `You are a kind, accurate ICSE Class 9 (India) teacher. A student is doing the quiz below and typed a QUESTION, not answers. Do NOT mark anything and do NOT say the answers are wrong. Answer the question briefly and simply. Do NOT reveal the quiz answers; give a hint unless the student clearly asks for the solution of one question.\n\nQUIZ:\n${quiz}\n\nSTUDENT'S QUESTION:\n${question}\n${LANG_RULES[lang] || LANG_RULES.english}\n${MATH_RULE}` }
 function composeGradePrompt(quiz, answers, lang) { return `You are a kind, accurate ICSE Class 9 (India) teacher marking a student's quiz.\n\nQUIZ:\n${quiz}\n\nSTUDENT'S ANSWERS:\n${answers}\n\nFor every question in order: say Correct, Partly correct or Incorrect; give the right answer; and if the student was wrong or partly right, explain the mistake in one or two simple sentences. Treat a missing answer as incorrect. Then give the total score out of the number of questions and two specific things to revise. Be encouraging and concise. Finish with one last line in exactly this form and nothing after it: SCORE: <marks>/<total> (for example SCORE: 3/5).\n${LANG_RULES[lang] || LANG_RULES.english}\n${MATH_RULE}` }
 
@@ -276,7 +287,7 @@ async function aiChat(prompt) {
 function cleanAnswer(r) { const a = extractResponse(r); if (!a || a === '[object Object]') { const e = new Error('The AI service returned an empty response. Please try again.'); e.kind = 'unknown'; throw e } return a }
 
 /* ---------- cache ---------- */
-function cacheGet(k) { return (lsGet(LS_CACHE, {}))[k] || null }
+function cacheGet(k) { const c = lsGet(LS_CACHE, {}), v = c && typeof c === 'object' ? c[k] : null; if (!v || typeof v.text !== 'string' || !v.text || !v.t || Date.now() - v.t > CACHE_TTL) return null; return v }
 function cacheSet(k, v) { const c = lsGet(LS_CACHE, {}); c[k] = v; const ks = Object.keys(c); if (ks.length > 40) ks.sort((a, b) => (c[a].t || 0) - (c[b].t || 0)).slice(0, ks.length - 40).forEach(x => delete c[x]); if (!lsSet(LS_CACHE, c)) lsSet(LS_CACHE, { [k]: v }) }
 
 /* ---------- markdown, maths, diagrams ---------- */
@@ -318,7 +329,7 @@ function showLesson(L, refs, kicker) {
   currentLesson = L;
   $('lessonKicker').textContent = kicker || (L.offline ? 'BUILT-IN QUICK LESSON' : 'YOUR PERSONAL LESSON'); $('lessonTitle').textContent = L.topic;
   const src = L.offline ? 'Offline guide' : (L.cached ? 'Cached · ' : '') + (L.model || (L.fromSaved ? 'Saved on this device' : 'AI-generated'));
-  $('lessonMeta').innerHTML = `<span class="tag">${esc(L.subject)}</span><span class="tag orange">${esc(MODE_LABEL[L.mode] || 'Lesson')}</span><span class="tag">${esc(src)}</span>${L.lang && L.lang !== 'english' ? `<span class="tag">${esc(L.lang === 'hindi' ? 'Hindi' : 'Hinglish')}</span>` : ''}`;
+  $('lessonMeta').innerHTML = `<span class="tag">${esc(L.subject)}</span><span class="tag orange">${esc(MODE_LABEL[L.mode] || 'Lesson')}</span><span class="tag">${esc(src)}</span>${L.level && L.level !== 'standard' && LEVEL_LABEL[L.level] ? `<span class="tag">${esc(LEVEL_LABEL[L.level])}</span>` : ''}${L.lang && L.lang !== 'english' ? `<span class="tag">${esc(L.lang === 'hindi' ? 'Hindi' : 'Hinglish')}</span>` : ''}`;
   $('lessonBody').innerHTML = (L.fallback && L.requested ? `<div role="alert" style="background:#fff8db;border:1px solid #f2c744;color:#7a5b00;border-radius:14px;padding:12px 14px;margin:0 0 14px;font-weight:600">⚠️ This model (${esc(L.requested)}) was unavailable so the response was generated by default model (${esc(L.model)}).</div>` : '') + `<article class="prose" lang="${L.lang === 'hindi' ? 'hi' : L.lang === 'hinglish' ? 'hi-Latn' : 'en'}">${renderMarkdown(L.text)}</article>`;
   $('lessonActions').classList.remove('hidden'); $('refineRow').classList.toggle('hidden', L.mode === 'quiz'); $('followInput').value = ''; $('followAnswer').innerHTML = ''; $('followAnswer').classList.add('hidden');
   const quiz = L.mode === 'quiz' && !L.offline; $('quizBox').classList.toggle('hidden', !quiz); if (quiz) { $('quizAnswers').value = ''; $('quizFeedback').innerHTML = ''; $('quizFeedback').classList.add('hidden') }
@@ -335,18 +346,18 @@ async function teach(mode = 'explain', opts = {}) {
   const topic = (opts.topic != null ? opts.topic : $('topicInput').value.trim()) || (ch ? ch.title : '');
   if (!topic) { showToast('Choose a chapter or type a topic first.'); $('topicInput').focus(); return }
   const baseExtra = ('baseExtra' in opts) ? opts.baseExtra : $('extraInput').value.trim(), refine = opts.refine || '';
-  const extra = [baseExtra, refine].filter(Boolean).join('; '), lang = opts.lang || selectedLang, model = getModelConfig(selectedModel), chapterTitle = ch ? ch.title : '';
-  const key = ['v2', s.id, mode, topic.toLowerCase(), chapterTitle.toLowerCase(), extra.toLowerCase(), lang, selectedModel].join('|');
+  const extra = [baseExtra, refine].filter(Boolean).join('; '), lang = opts.lang || selectedLang, level = opts.level || selectedLevel, model = getModelConfig(selectedModel), chapterTitle = ch ? ch.title : '';
+  const key = [PROMPT_VERSION, s.id, mode, topic.toLowerCase(), chapterTitle.toLowerCase(), extra.toLowerCase(), lang, level, selectedModel].join('|');
   const retry = () => teach(mode, opts);
   setLoading(mode, s.name, topic, model.name);
-  const base = { subject: s.name, subjectId: s.id, topic, mode, chapter: chapterTitle, baseExtra, refine, lang, created: Date.now() };
+  const base = { subject: s.name, subjectId: s.id, topic, mode, chapter: chapterTitle, baseExtra, refine, lang, level, created: Date.now() };
   const studied = () => { const i = chapterIndexFor(s, topic, ch); if (i != null) markStudied(s.id, i); recordActivity() };
   let refs = [];
   try {
     const hit = opts.force ? null : cacheGet(key);
     if (hit) { const L = { ...base, text: hit.text, model: hit.model, fallback: !!hit.fallback, requested: hit.requested || '', cached: true }; showLesson(L, hit.refs || []); studied(); return }
     refs = await getWikipedia(`${s.name} ${topic} ICSE class 9`); // reference lookup first, then the AI call (never rejects)
-    const prompt = composePrompt(mode, s.name, topic, chapterTitle, extra, refs, lang);
+    const prompt = composePrompt(mode, s.name, topic, chapterTitle, extra, refs, lang, level);
     try {
       const r = await aiChat(prompt);
       const L = { ...base, text: r.text, model: r.model, fallback: r.fallback, requested: r.requested };
@@ -367,17 +378,22 @@ function refineLesson(instr, force) {
   // An explicit "Hindi" refine overrides the language setting, otherwise the prompt would carry two contradictory language rules.
   const wantsHindi = /\b(in|into|to)\s+(simple\s+)?hindi\b|devanagari|हिन्दी|हिंदी/i.test(instr || '');
   const lang = wantsHindi ? 'hindi' : (LANG_RULES[L.lang] ? L.lang : undefined);
-  teach(L.mode, { lang, subject: s, topic: L.topic, chapter: ci >= 0 ? { title: s.chapters[ci][0], page: s.chapters[ci][1], index: ci } : null, baseExtra: L.baseExtra || '', refine: instr || (force ? L.refine || '' : ''), force })
+  teach(L.mode, { lang, level: L.level, subject: s, topic: L.topic, chapter: ci >= 0 ? { title: s.chapters[ci][0], page: s.chapters[ci][1], index: ci } : null, baseExtra: L.baseExtra || '', refine: instr || (force ? L.refine || '' : ''), force })
 }
 let following = false;
 async function askFollowUp() {
   const L = currentLesson, q = $('followInput').value.trim(); if (following || !L || L.mode === 'quiz') return; if (!q) { showToast('Type your question first.'); $('followInput').focus(); return }
   following = true; const btn = $('followBtn'), fb = $('followAnswer'); btn.disabled = true; btn.textContent = 'Thinking…'; fb.classList.remove('hidden'); fb.innerHTML = '<div class="loading"><div class="spinner"></div><strong>Answering your question…</strong></div>';
-  try { const r = await aiChat(composeFollowUpPrompt(L.text, q, L.lang)); $('followInput').value = ''; fb.innerHTML = `<article class="prose">${renderMarkdown(r.text)}</article>` }
+  try { const r = await aiChat(composeFollowUpPrompt(L.text, q, L.lang, L.level)); $('followInput').value = ''; fb.innerHTML = `<article class="prose">${renderMarkdown(r.text)}</article>` }
   catch (err) { const [t, m] = errorCopy(classifyError(err), err); fb.innerHTML = `<div class="callout error-box"><span>🌐</span><div><strong>${esc(t)}</strong>${esc(m)}</div></div>` }
   finally { following = false; btn.disabled = false; btn.textContent = 'Ask'; fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' }) }
 }
-function composeFollowUpPrompt(lesson, question, lang) { return `You are a kind, accurate ICSE Class 9 (India) teacher. A student read the lesson below and has a follow-up QUESTION. Answer it simply and clearly in a few short paragraphs. Do NOT add a quiz or practice questions.\n\nLESSON:\n${lesson}\n\nSTUDENT'S QUESTION:\n${question}\n${LANG_RULES[lang] || LANG_RULES.english}\n${MATH_RULE}` }
+function composeFollowUpPrompt(lesson, question, lang, level) { return `You are a kind, accurate ICSE Class 9 (India) teacher. A student read the lesson below and has a follow-up QUESTION. Answer it simply and clearly in a few short paragraphs. Do NOT add a quiz or practice questions.\n\nLESSON:\n${lesson}\n\nSTUDENT'S QUESTION:\n${question}\n${LANG_RULES[lang] || LANG_RULES.english}\n${LEVEL_RULES[level] || LEVEL_RULES.standard}\n${MATH_RULE}` }
+// Turns the open lesson into flashcards or a quiz on the same topic, language and level (no extra wording needed).
+function deriveFromLesson(mode) {
+  const L = currentLesson; if (!L || busy) return; const s = subjectOf(L); const ci = L.chapter ? s.chapters.findIndex(c => c[0] === L.chapter) : -1;
+  teach(mode, { lang: LANG_RULES[L.lang] ? L.lang : undefined, level: L.level, subject: s, topic: L.topic, chapter: ci >= 0 ? { title: s.chapters[ci][0], page: s.chapters[ci][1], index: ci } : null, baseExtra: L.baseExtra || '' })
+}
 function newLesson() { currentLesson = null; $('lessonKicker').textContent = 'READY WHEN YOU ARE'; $('lessonTitle').textContent = 'Your lesson will appear here'; $('lessonMeta').innerHTML = ''; $('lessonBody').innerHTML = EMPTY_HTML;['lessonActions', 'refineRow', 'quizBox', 'referencesWrap'].forEach(id => $(id).classList.add('hidden')); currentRefs = []; $('topicInput').value = ''; $('chapterSelect').value = ''; $('extraInput').value = ''; syncChips(); saveSelection(); $('teachPanel').scrollIntoView({ behavior: 'smooth', block: 'start' }); $('topicInput').focus() }
 
 /* ---------- quiz grading ---------- */
@@ -405,7 +421,7 @@ async function gradeQuiz() {
 function sameLesson(a, b) { return a.subject === b.subject && a.topic === b.topic && a.mode === b.mode }
 function isSaved(L) { return !!L && getSaved().some(x => sameLesson(x, L)) }
 function updateSaveBtn() { const b = $('saveLessonBtn'), on = isSaved(currentLesson); b.textContent = on ? '♥ Saved' : '♡ Save'; b.setAttribute('aria-pressed', on ? 'true' : 'false'); b.title = on ? 'Saved. Click to remove it from your library' : 'Save to your library' }
-function saveLesson(L) { let a = getSaved(); const old = a.find(x => sameLesson(x, L)); a = a.filter(x => !sameLesson(x, L)); const now = Date.now(); const item = { id: old ? old.id : (now.toString(36) + Math.random().toString(36).slice(2, 6)), text: L.text, subject: L.subject, subjectId: L.subjectId, topic: L.topic, mode: L.mode, chapter: L.chapter || '', baseExtra: L.baseExtra || '', refine: L.refine || '', lang: L.lang || 'english', model: L.offline ? '' : (L.model || ''), fallback: !!L.fallback, requested: L.requested || '', offline: !!L.offline, created: now, stage: 0, reviewAt: now + 3 * DAY, synced: false }; a.unshift(item); setSaved(a.slice(0, 120)); updateSaveBtn(); return pushLesson(item) }
+function saveLesson(L) { let a = getSaved(); const old = a.find(x => sameLesson(x, L)); a = a.filter(x => !sameLesson(x, L)); const now = Date.now(); const item = { id: old ? old.id : (now.toString(36) + Math.random().toString(36).slice(2, 6)), text: L.text, subject: L.subject, subjectId: L.subjectId, topic: L.topic, mode: L.mode, chapter: L.chapter || '', baseExtra: L.baseExtra || '', refine: L.refine || '', lang: L.lang || 'english', level: L.level || 'standard', model: L.offline ? '' : (L.model || ''), fallback: !!L.fallback, requested: L.requested || '', offline: !!L.offline, created: now, stage: 0, reviewAt: now + 3 * DAY, synced: false }; a.unshift(item); setSaved(a.slice(0, 120)); updateSaveBtn(); return pushLesson(item) }
 function toggleSave() {
   const L = currentLesson; if (!L) { showToast('There is no lesson to save yet.'); return }
   if (isSaved(L)) { getSaved().filter(x => sameLesson(x, L)).forEach(x => deleteRemote(x.id)); setSaved(getSaved().filter(x => !sameLesson(x, L))); updateSaveBtn(); showToast('Removed from your library.') } else { const was = signedIn, p = saveLesson(L); if (!was) showToast('Saved to My library on this device.'); else p.then(ok => showToast(ok ? 'Saved to your account.' : 'Saved on this device only. Log in again or check your connection to sync it.')) }
