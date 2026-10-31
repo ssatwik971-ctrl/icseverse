@@ -27,6 +27,7 @@
   <script defer src="https://js.puter.com/v2/"></script>
   <link rel="stylesheet" href="./assets/auth.css">
   <link rel="stylesheet" href="./assets/app.css">
+  <link rel="stylesheet" href="./assets/study.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
   <script type="module" src="./assets/auth.js"></script>
@@ -48,6 +49,7 @@
         <div class="auth-controls" id="authControls"></div>
       </div>
     </header>
+    <div class="sn-offline hidden" id="snOffline" role="status"></div>
     <div class="layout">
       <aside class="sidebar">
         <div class="side-heading"><span>Your syllabus</span><span class="count-badge" id="chapterCount">0</span></div>
@@ -58,6 +60,7 @@
           syllabus. Tap any chapter to instantly generate custom lessons, revision notes, and practice quizzes.</div>
       </aside>
       <main class="content" id="main">
+        <nav class="sn-nav" id="snNav" aria-label="StudyNest sections"></nav>
         <div class="callout hidden" id="puterHint" style="margin:0 0 16px"><span>👋</span><div><strong>First time here?</strong> The AI runs through Puter. If a pop-up asks you to sign in to Puter, allow it and sign in (it is free), then press <strong>Teach me</strong> again. If nothing happens, check that your browser is not blocking pop-ups. <button class="btn btn-light btn-sm" id="puterHintClose" type="button" style="margin-left:6px">Got it</button></div></div>
         <div class="resume-card hidden" id="resumeCard"></div>
         <div class="resume-card weak-card hidden" id="weakCard"></div>
@@ -179,6 +182,10 @@
             <div class="action-row" style="margin-top:8px"><button class="btn btn-primary btn-sm" id="followBtn">Ask</button><button class="btn btn-light btn-sm" type="button" data-quick="Explain this again in a simpler way, for a beginner.">Simpler</button><button class="btn btn-light btn-sm" type="button" data-quick="Give me one more worked example, different from the ones above.">Another example</button><button class="btn btn-light btn-sm" type="button" data-quick="Summarise this lesson in 5 short bullet points.">Summary</button><button class="btn btn-light btn-sm" type="button" data-quick="Write a full-mark ICSE exam answer (about 5 marks) for the main idea of this lesson.">Exam answer</button></div>
             <div class="quiz-feedback hidden" id="followAnswer" aria-live="polite"></div>
           </div>
+          <div class="refine-row hidden" id="pipeRow" style="display:block"><span class="tiny-label">TURN THIS LESSON INTO</span>
+            <div class="action-row" style="margin-top:8px"><button class="btn btn-light btn-sm" type="button" data-pipe="keypoints">Key points</button><button class="btn btn-light btn-sm" type="button" data-pipe="definitions">Definitions</button><button class="btn btn-light btn-sm" type="button" data-pipe="revision">Revision sheet</button><button class="btn btn-light btn-sm" type="button" data-pipe="cards">Review cards</button><button class="btn btn-outline btn-sm" type="button" data-pipe="note">Save as note</button></div>
+            <div id="pipeOut" aria-live="polite"></div>
+          </div>
           <div class="reference-wrap hidden" id="referencesWrap">
             <div class="tiny-label">WEB READING · WIKIPEDIA</div>
             <div class="reference-grid" id="referenceGrid"></div>
@@ -211,13 +218,24 @@
           </div>
           <div id="libraryContent"></div>
         </section>
+        <section class="panel hidden" id="snView" aria-label="StudyNest tools"><div id="snViewBody"></div></section>
         <div class="footer-note">StudyNest is an independent study helper, not an official CISCE product. Always check
           your teacher's syllabus and textbook for exact exam requirements.</div>
       </main>
     </div>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </div>
+  <div id="snPrint" aria-hidden="true"></div>
+  <dialog id="snDialog" class="sn-dialog"></dialog>
   <script src="./assets/app.js"></script>
+  <script src="./assets/logic.js"></script>
+  <script src="./assets/data.js"></script>
+  <script src="./assets/ui.js"></script>
+  <script src="./assets/dash.js"></script>
+  <script src="./assets/learn.js"></script>
+  <script src="./assets/exam.js"></script>
+  <script src="./assets/detective.js"></script>
+  <script src="./assets/labs.js"></script>
 </body>
 
 </html>

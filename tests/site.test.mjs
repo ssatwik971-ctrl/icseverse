@@ -44,7 +44,7 @@ test('netlify.toml redirects point to real pages', () => {
 
 test('the build copies the files the pages need', () => {
   const b = read('build.mjs')
-  assert.ok(b.includes('assets/app.js') && b.includes('assets/app.css'))
+  assert.ok(b.includes("readdir('assets'") && b.includes('dist/assets'))
   assert.ok(read('index.html').includes('./assets/app.js'))
 })
 

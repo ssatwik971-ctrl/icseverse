@@ -1,7 +1,8 @@
 // StudyNest service worker: keeps the app shell available offline.
 // AI calls, Wikipedia and Puter are never intercepted (they need the network anyway).
-const CACHE = 'studynest-v10'
-const SHELL = ['./', './index.html', './assets/app.css', './assets/app.js', './assets/auth.js', './assets/auth.css', './auth.html', './404.html', './manifest.webmanifest', './favicon.png', './favicon-32.png', './icon-192.png', './apple-touch-icon.png']
+// Only files in the Cache Storage are replaced when the version changes. Notes, cards, papers and lessons live in localStorage and are never touched here.
+const CACHE = 'studynest-v11'
+const SHELL = ['./', './index.html', './assets/app.css', './assets/app.js', './assets/auth.js', './assets/auth.css', './assets/study.css', './assets/logic.js', './assets/data.js', './assets/ui.js', './assets/dash.js', './assets/learn.js', './assets/exam.js', './assets/detective.js', './assets/labs.js', './auth.html', './404.html', './manifest.webmanifest', './favicon.png', './favicon-32.png', './icon-192.png', './apple-touch-icon.png']
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => Promise.allSettled(SHELL.map(u => c.add(u)))).then(() => self.skipWaiting()))

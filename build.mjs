@@ -31,9 +31,11 @@ for (const e of await readdir('.', { withFileTypes: true })) {
 // the service worker must sit at the site root to control the whole origin,
 // and the stylesheets are referenced as /assets/*.css by the pages.
 if (existsSync('sw.js')) await copyFile('sw.js', 'dist/sw.js')
-for (const f of ['assets/app.css', 'assets/app.js', 'auth.css', 'assets/auth.css']) {
-  if (existsSync(f)) await copyFile(f, `dist/assets/${f.split('/').pop()}`)
+// Every script and stylesheet in assets/ is published (auth.js is made by the bundle above).
+for (const e of await readdir('assets', { withFileTypes: true })) {
+  if (e.isFile() && /\.(js|css)$/.test(e.name)) await copyFile(`assets/${e.name}`, `dist/assets/${e.name}`)
 }
+if (existsSync('auth.css')) await copyFile('auth.css', 'dist/assets/auth.css')
 if (!existsSync('dist/assets/auth.css')) console.warn('Warning: auth.css not found; index.html and auth.html link to /assets/auth.css')
 
 console.log('Built dist/')
