@@ -120,3 +120,14 @@ html[data-theme="dark"] .tab{color:var(--muted)}
 html[data-theme="dark"] .tab.active{color:#ffc79c}
 html[data-theme="dark"] .toast{background:#e6ecf8;color:#0f1729}
 @media print{html[data-theme="dark"] body{background:#fff;color:#000}html[data-theme="dark"] .prose,html[data-theme="dark"] .prose *{color:#000!important}}
+/* ---------- Dark mode: every input, textarea, select and button (also ones outside .field) ---------- */
+html[data-theme="dark"] input:not([type=checkbox]):not([type=radio]):not([type=range]),html[data-theme="dark"] textarea,html[data-theme="dark"] select{background:#101a30;border-color:#2f3f5f;color:var(--ink)}
+html[data-theme="dark"] input::placeholder,html[data-theme="dark"] textarea::placeholder{color:#7f8da8}
+html[data-theme="dark"] input:focus,html[data-theme="dark"] textarea:focus,html[data-theme="dark"] select:focus{background:#142040}
+html[data-theme="dark"] option{background:#101a30;color:var(--ink)}
+html[data-theme="dark"] button:not(.btn-primary):not(.btn-dark):not(.sn-tab):not(.subject-button):not(.tab):not(.suggestion):not(.chapter-card):not(.saved-card):not(.sn-opt):not(.active):not([class*="sn-"]){background:#1d2a47;border-color:var(--line);color:#d5def0}
+html[data-theme="dark"] .btn-primary{background:var(--orange);color:#2b2630}
+html[data-theme="dark"] dialog{background:#16213a;color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] dialog::backdrop{background:rgba(0,0,0,.6)}
+html[data-theme="dark"] .empty-icon{background:#1d2a47}
+html[data-theme="dark"] .saved-icon,html[data-theme="dark"] .tag.orange{background:#3a2a1e;color:#ffd0ad}
